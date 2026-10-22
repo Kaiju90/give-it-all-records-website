@@ -1,0 +1,119 @@
+{
+  "label": "Give It All Records",
+  "producer": "Luciano Lupini",
+  "locations": ["Caracas", "London"],
+  "canonical_url": "https://giveitallrecords.com",
+  "version": "audiostoreandsyncterminal_002",
+  "revision": "002",
+  "standard_rate_usd": 10.0,
+  "master_format": "24-bit / 48kHz WAV Uncompressed",
+  "cdn_host": "cdn.giveitallrecords.com",
+  "egress_fee": "0%",
+  "accepted_rails": ["USDT", "BTC", "Payoneer", "Email"],
+  "roster": [
+    {
+      "alias": "KNOX ORACLE",
+      "category": "Hip-Hop",
+      "subgenres": ["Lo-Fi", "Boom Bap", "Experimental Hip-Hop"],
+      "recommended_use": ["Emcee Vocal Leases", "Urban Media", "Streetwear Campaigns"]
+    },
+    {
+      "alias": "PYRAMID",
+      "category": "Electronic",
+      "subgenres": ["Drum & Bass", "Breakbeats", "Breakcore", "Atmospheric Electronic"],
+      "recommended_use": ["Art Biennials", "Gallery Installations", "Sci-Fi Scoring", "Video Games"]
+    },
+    {
+      "alias": "ESCAPADES",
+      "category": "Guitar Music",
+      "subgenres": ["Rock", "Punk", "Noise Music", "Alternative"],
+      "recommended_use": ["Indie Film Chase Scenes", "Skate Media", "High-Impact Commercials"]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "GIAR-001",
+      "title": "Sub-Harmonic Glitch",
+      "artist": "PYRAMID",
+      "category": "Electronic",
+      "subgenre": "Drum & Bass / Glitch",
+      "moods": ["moody", "cinematic", "glitchy"],
+      "bpm": 128,
+      "key": "D Minor",
+      "duration": "03:42",
+      "price_usd": 10.0,
+      "woo_product_id": 101,
+      "direct_cart_url": "https://giveitallrecords.com/shop/?add-to-cart=101"
+    },
+    {
+      "id": "GIAR-002",
+      "title": "Boom Bap Vector",
+      "artist": "KNOX ORACLE",
+      "category": "Hip-Hop",
+      "subgenre": "Boom Bap",
+      "moods": ["bouncy", "angry", "moody"],
+      "bpm": 89,
+      "key: ": "F# Minor",
+      "duration": "02:54",
+      "price_usd": 10.0,
+      "woo_product_id": 102,
+      "direct_cart_url": "https://giveitallrecords.com/shop/?add-to-cart=102"
+    },
+    {
+      "id": "GIAR-003",
+      "title": "Static Noise Loop",
+      "artist": "ESCAPADES",
+      "category": "Guitar Music",
+      "subgenre": "Noise Music",
+      "moods": ["angry", "cinematic", "hypnotic"],
+      "bpm": 142,
+      "key": "A Major",
+      "duration": "03:18",
+      "price_usd": 10.0,
+      "woo_product_id": 103,
+      "direct_cart_url": "https://giveitallrecords.com/shop/?add-to-cart=103"
+    },
+    {
+      "id": "GIAR-004",
+      "title": "Analog Resonance",
+      "artist": "PYRAMID",
+      "category": "Electronic",
+      "subgenre": "Atmospheric Electronic",
+      "moods": ["bouncy", "moody", "hypnotic"],
+      "bpm": 122,
+      "key": "C Minor",
+      "duration": "04:05",
+      "price_usd": 10.0,
+      "woo_product_id": 104,
+      "direct_cart_url": "https://giveitallrecords.com/shop/?add-to-cart=104"
+    },
+    {
+      "id": "GIAR-005",
+      "title": "Obsidian Cipher",
+      "artist": "KNOX ORACLE",
+      "category": "Hip-Hop",
+      "subgenre": "Lo-Fi Hip-Hop",
+      "moods": ["moody", "cinematic"],
+      "bpm": 84,
+      "key": "G Minor",
+      "duration": "03:10",
+      "price_usd": 10.0,
+      "woo_product_id": 105,
+      "direct_cart_url": "https://giveitallrecords.com/shop/?add-to-cart=105"
+    },
+    {
+      "id": "GIAR-006",
+      "title": "Cathode Decay",
+      "artist": "ESCAPADES",
+      "category": "Guitar Music",
+      "subgenre": "Punk / Alternative",
+      "moods": ["angry", "hypnotic"],
+      "bpm": 156,
+      "key": "E Minor",
+      "duration": "02:48",
+      "price_usd": 10.0,
+      "woo_product_id": 106,
+      "direct_cart_url": "https://giveitallrecords.com/shop/?add-to-cart=106"
+    }
+  ]
+}

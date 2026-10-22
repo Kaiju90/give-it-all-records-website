@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIVE IT ALL RECORDS // AUDIO STORE [REV: B_001]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #050505;
+      --panel-bg: #0a0a0a;
+      --text-color: #f0f0f0;
+      --text-muted: #888888;
+      --dim-color: #555555;
+      --border-color: #222222;
+      --border-light: #444444;
+      --accent-white: #ffffff;
+      --font-primary: 'Space Mono', monospace;
+      --font-alt: 'VT323', monospace;
+      --phosphor-glow: 0 0 10px rgba(255, 255, 255, 0.45);
+      --phosphor-glow-strong: 0 0 16px rgba(255, 255, 255, 0.85);
+      --phosphor-text-glow: 0 0 8px rgba(255, 255, 255, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-primary);
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.font-mode-vt323 {
+      font-family: var(--font-alt);
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding-bottom: 120px;
+    }
+
+    .glow-hover:hover {
+      box-shadow: var(--phosphor-glow);
+      text-shadow: var(--phosphor-text-glow);
+    }
+
+    /* HEADER */
+    header {
+      border: 2px solid var(--accent-white);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #000000;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo-box h1 {
+      font-size: 1.25rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rev-badge {
+      font-size: 0.65rem;
+      background: #ffffff;
+      color: #000000;
+      padding: 2px 6px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #ffffff;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: #aaaaaa;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border: 1px solid var(--border-color);
+      text-transform: uppercase;
+      transition: all 0.15s ease;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: #000000;
+      background: #ffffff;
+      border-color: #ffffff;
+      font-weight: bold;
+    }
+
+    /* LAB HEADER */
+    .lab-box {
+      border: 1px solid var(--accent-white);
+      background: var(--panel-bg);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .lab-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .lab-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .lab-body {
+      font-size: 0.75rem;
+      color: #cccccc;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .lab-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* $10 PROTOCOL */
+    .protocol-box {
+      border: 1px solid #333333;
+      background: #050505;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .protocol-title {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .protocol-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .protocol-card {
+      border: 1px solid var(--border-color);
+      background: var(--panel-bg);
+      padding: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .protocol-card strong {
+      display: block;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    /* 3-COLUMN ALIAS MATRIX */
+    .matrix-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .alias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .alias-card {
+      border: 1px solid var(--border-color);
+      background: var(--panel-bg);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .alias-card:hover, .alias-card.active {
+      border-color: #ffffff;
+      background: #111111;
+      box-shadow: var(--phosphor-glow);
+    }
+
+    .alias-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .alias-card h3 {
+      font-size: 1rem;
+      letter-spacing: 1px;
+      color: #ffffff;
+    }
+
+    .alias-tag {
+      font-size: 0.65rem;
+      border: 1px solid var(--border-light);
+      padding: 1px 6px;
+      color: #aaaaaa;
+      text-transform: uppercase;
+    }
+
+    .alias-sub {
+      font-size: 0.75rem;
+      color: #ffffff;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .alias-desc {
+      font-size: 0.7rem;
+      color: #777777;
+      line-height: 1.4;
+    }
+
+    /* TERMINAL */
+    .terminal-bar {
+      border: 2px solid var(--accent-white);
+      background: #000000;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .terminal-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .terminal-prompt {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .terminal-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .terminal-btn {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #ffffff;
+      padding: 4px 14px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .terminal-btn:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .terminal-feedback {
+      font-size: 0.68rem;
+      color: #aaaaaa;
+      margin-top: 8px;
+      border-top: 1px solid #1a1a1a;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* OSCILLOSCOPE MONITOR */
+    .scope-box {
+      border: 2px solid var(--accent-white);
+      background: #000000;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .scope-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .scope-header strong {
+      color: #ffffff;
+    }
+
+    .scope-canvas-wrap {
+      border: 1px solid var(--border-color);
+      background: #050505;
+      position: relative;
+    }
+
+    canvas {
+      width: 100%;
+      height: 70px;
+      display: block;
+    }
+
+    /* FILTER PANELS */
+    .filters-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .filters-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .filter-panel {
+      border: 1px solid var(--border-color);
+      background: var(--panel-bg);
+      padding: 12px;
+    }
+
+    .filter-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-btn {
+      border: 1px solid var(--border-light);
+      background: #000000;
+      color: #aaaaaa;
+      padding: 3px 8px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.15s ease;
+    }
+
+    .tag-btn:hover, .tag-btn.active {
+      border-color: #ffffff;
+      background: #ffffff;
+      color: #000000;
+      font-weight: bold;
+      box-shadow: var(--phosphor-glow);
+    }
+
+    /* CATALOG SECTION & ROWS */
+    .catalog-header {
+      border-bottom: 2px solid var(--accent-white);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .catalog-header h2 {
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .catalog-stats {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .track-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .track-row {
+      border: 1px solid var(--border-color);
+      background: #000000;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+
+    @media (min-width: 900px) {
+      .track-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .track-row:hover, .track-row.playing {
+      border-color: #ffffff;
+      background: #0a0a0a;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+    }
+
+    .track-left {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .track-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .track-id {
+      font-size: 0.65rem;
+      color: var(--dim-color);
+    }
+
+    .track-alias-pill {
+      border: 1px solid #ffffff;
+      color: #ffffff;
+      padding: 1px 6px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .track-genre-pill {
+      border: 1px solid #333333;
+      color: #888888;
+      padding: 1px 6px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+    }
+
+    .track-specs-str {
+      font-size: 0.65rem;
+      color: var(--dim-color);
+    }
+
+    .track-title {
+      font-size: 1.05rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .track-specs-badge {
+      font-size: 0.68rem;
+      color: #888888;
+      border-left: 2px solid #ffffff;
+      padding-left: 6px;
+    }
+
+    /* PLAYER CONTROL STRIP */
+    .track-player {
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid var(--border-color);
+      background: #050505;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-play {
+      border: 1px solid #ffffff;
+      background: transparent;
+      color: #ffffff;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .btn-play:hover, .btn-play.active {
+      background: #ffffff;
+      color: #000000;
+      box-shadow: var(--phosphor-glow);
+    }
+
+    .player-progress-wrap {
+      flex: 1;
+    }
+
+    .player-time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .audio-scrubber {
+      width: 100%;
+      height: 4px;
+      background: #222222;
+      appearance: none;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .audio-scrubber::-webkit-slider-thumb {
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    /* RIGHT COMMERCE ACTION */
+    .track-right {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 200px;
+    }
+
+    .price-box {
+      text-align: right;
+    }
+
+    .price-val {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .price-sub {
+      font-size: 0.65rem;
+      color: var(--dim-color);
+      text-transform: uppercase;
+    }
+
+    .btn-acquire {
+      border: 2px solid #ffffff;
+      background: #ffffff;
+      color: #000000;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 8px 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-decoration: none;
+      display: inline-block;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .btn-acquire:hover {
+      background: #000000;
+      color: #ffffff;
+      box-shadow: var(--phosphor-glow);
+    }
+
+    /* BOTTOM PERSISTENT TRANSPORT DOCK */
+    .transport-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000000;
+      border-top: 2px solid #ffffff;
+      padding: 10px 20px;
+      z-index: 100;
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.9);
+    }
+
+    .dock-content {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .dock-track-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 240px;
+    }
+
+    .dock-scrubber-wrap {
+      flex: 1;
+      max-width: 440px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* MODAL OVERLAY */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-dialog {
+      border: 2px solid #ffffff;
+      background: #000000;
+      max-width: 500px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-header {
+      border-bottom: 2px solid #ffffff;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modal-specs {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.6;
+      border-bottom: 1px dashed #333333;
+      padding-bottom: 10px;
+    }
+
+    .modal-rails-box {
+      border: 1px solid #ffffff;
+      background: #0a0a0a;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .rail-btn {
+      width: 100%;
+      border: 1px solid #333333;
+      background: #000000;
+      color: #aaaaaa;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      text-align: left;
+      cursor: pointer;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rail-btn.active, .rail-btn:hover {
+      border-color: #ffffff;
+      background: #ffffff;
+      color: #000000;
+      font-weight: bold;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-modal-checkout {
+      border: 2px solid #ffffff;
+      background: #ffffff;
+      color: #000000;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-modal-checkout:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .btn-modal-close {
+      border: 1px solid #444444;
+      background: transparent;
+      color: #ffffff;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-modal-close:hover {
+      border-color: #ffffff;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--dim-color);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header>
+      <div class="logo-box">
+        <h1>
+          <span class="status-dot"></span>
+          GIVE IT ALL RECORDS
+          <span class="rev-badge">REV: B_001</span>
+        </h1>
+        <div style="font-size: 0.7rem; color: #888888; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">
+          AUDIO STORE // DIRECT-TO-FAN // CARACAS
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button type="button" class="btn-action" id="fontToggleBtn">
+          FONT: SPACE MONO [SWITCH TO VT323]
+        </button>
+
+        <nav class="nav-links">
+          <a href="label.html">01.LABEL</a>
+          <a href="songs.html" class="active">02.SONGS</a>
+          <a href="vault.html">03.VAULT</a>
+          <a href="artistry.html">04.ARTISTRY</a>
+          <a href="about.html">05.ABOUT</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- LAB HEADER -->
+    <section class="lab-box">
+      <div class="lab-header">
+        <div class="lab-title">
+          INDEPENDENT AUDIO &amp; HARDWARE LAB // LUCIANO LUPINI
+        </div>
+        <span style="font-size: 0.65rem; border: 1px solid #444; padding: 2px 6px; color: #aaa;">
+          CARACAS &amp; LONDON // DIRECT DISTRIBUTION PROTOCOL ACTIVE
+        </span>
+      </div>
+      <div class="lab-body">
+        Independent music label and production laboratory operating out of Caracas and London. Releasing electronic, IDM, noise, and abstract hip-hop across physical and digital formats under Knox Oracle, Pyramid, and Escapades. All sound tracked and mixed with physical hardware—SP-404 samplers, analog cassette tape, modular synthesizers, and vintage preamplifiers.
+      </div>
+      <div class="lab-tags">
+        <span>&bull; CARACAS &amp; LONDON RECORDING LABS</span>
+        <span>&bull; CLOUDFLARE R2 ZERO-EGRESS MASTER DISPATCH</span>
+        <span>&bull; 0% FEE DIRECT WALLET SETTLEMENT</span>
+        <span>&bull; 24-BIT / 48KHZ STUDIO MASTERS</span>
+      </div>
+    </section>
+
+    <!-- $10 PROTOCOL -->
+    <section class="protocol-box">
+      <div class="protocol-title">
+        THE $10.00 MASTER ACQUISITION PROTOCOL // WHAT YOU RECEIVE
+      </div>
+      <div class="protocol-grid">
+        <div class="protocol-card">
+          <strong>1. UNCOMPRESSED WAV</strong>
+          Full studio master 24-bit / 48kHz WAV file (never lossy MP3 compression).
+        </div>
+        <div class="protocol-card">
+          <strong>2. R2 TOKEN DELIVERY</strong>
+          Instant, secure expiring Cloudflare R2 download link sent straight to your email.
+        </div>
+        <div class="protocol-card">
+          <strong>3. ROYALTY-FREE SYNC</strong>
+          Pre-cleared worldwide sync clearance for film, games, docs, and online commercials.
+        </div>
+        <div class="protocol-card">
+          <strong>4. EMCEE BEAT LEASE</strong>
+          Vocal recording rights included for artists, rappers, and vocalists with zero backend royalties.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-COLUMN ALIAS MATRIX -->
+    <section>
+      <div class="matrix-title">
+        <span>01 // PRODUCTION ROSTER &amp; SONIC TAXONOMY</span>
+        <span>CLICK ANY ALIAS TO ISOLATE SOUND WORLD</span>
+      </div>
+
+      <div class="alias-grid">
+        <div class="alias-card" data-alias="KNOX ORACLE" id="aliasKnox">
+          <div class="alias-card-header">
+            <h3>KNOX ORACLE</h3>
+            <span class="alias-tag">FILTER</span>
+          </div>
+          <div class="alias-sub">Hip-Hop // Lo-Fi, Boom Bap &amp; Experimental</div>
+          <div class="alias-desc">
+            Cassette tape compression, dusty jazz chops, SP-404 swing, and subterranean 808 subs built for vocalists and emcees.
+          </div>
+        </div>
+
+        <div class="alias-card" data-alias="PYRAMID" id="aliasPyramid">
+          <div class="alias-card-header">
+            <h3>PYRAMID</h3>
+            <span class="alias-tag">FILTER</span>
+          </div>
+          <div class="alias-sub">Electronic // Drum &amp; Bass, Breakcore &amp; Atmospheric</div>
+          <div class="alias-desc">
+            Algorithmic polyrhythms, fractured break slicing, and modular drone textures engineered for art biennials and sci-fi film scoring.
+          </div>
+        </div>
+
+        <div class="alias-card" data-alias="ESCAPADES" id="aliasEscapades">
+          <div class="alias-card-header">
+            <h3>ESCAPADES</h3>
+            <span class="alias-tag">FILTER</span>
+          </div>
+          <div class="alias-sub">Guitar Music // Rock, Punk, Noise &amp; Alternative</div>
+          <div class="alias-desc">
+            Blown-out tube fuzz, aggressive mechanical drum drives, feedback squalls, and raw post-punk adrenaline for action media and skate films.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TERMINAL -->
+    <section class="terminal-bar">
+      <div class="terminal-row">
+        <span class="terminal-prompt">SYS_EXEC_&gt;</span>
+        <input
+          type="text"
+          id="terminalInput"
+          class="terminal-input"
+          placeholder="SEARCH BY KEYWORD, MOOD, GENRE, OR BPM (E.G. 'BOOM BAP', 'NOISE', '128', 'RESET')..."
+        />
+        <button type="button" class="terminal-btn" id="terminalExecBtn">EXEC</button>
+      </div>
+      <div class="terminal-feedback">
+        <span id="terminalStatusMsg">SYS_EXEC // COMMAND &amp; FILTER INTERPRETER READY</span>
+        <span id="terminalMatchCount">SHOWING 6 OF 6 MASTER RECORDINGS</span>
+      </div>
+    </section>
+
+    <!-- OSCILLOSCOPE MONITOR -->
+    <section class="scope-box">
+      <div class="scope-header">
+        <div>
+          <strong>MONO SIGNAL MONITOR</strong> // HARDWARE WAVEFORM OSCILLOSCOPE
+        </div>
+        <div id="scopeStatusText">
+          IDLE // WAITING FOR AUDIO ENGAGEMENT
+        </div>
+      </div>
+      <div class="scope-canvas-wrap">
+        <canvas id="oscilloscopeCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- DUAL FILTER CONSOLE -->
+    <section class="filters-wrap">
+      <div class="filter-panel">
+        <div class="filter-title">GRANULAR SUB-GENRE MATRIX // PROVENANCE CLUSTERS</div>
+        <div class="tags-list" id="subgenreTagList">
+          <button type="button" class="tag-btn active" data-sub="all">ALL SUBGENRES</button>
+          <button type="button" class="tag-btn" data-sub="boom bap">BOOM BAP</button>
+          <button type="button" class="tag-btn" data-sub="lo-fi">LO-FI</button>
+          <button type="button" class="tag-btn" data-sub="drum & bass">DRUM &amp; BASS</button>
+          <button type="button" class="tag-btn" data-sub="glitch">GLITCH</button>
+          <button type="button" class="tag-btn" data-sub="atmospheric">ATMOSPHERIC</button>
+          <button type="button" class="tag-btn" data-sub="noise">NOISE ROCK</button>
+          <button type="button" class="tag-btn" data-sub="punk">PUNK</button>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <div class="filter-title">MOOD CLOUD // TONAL AESTHETIC</div>
+        <div class="tags-list" id="moodTagList">
+          <button type="button" class="tag-btn active" data-mood="all">ALL MOODS</button>
+          <button type="button" class="tag-btn" data-mood="moody">MOODY</button>
+          <button type="button" class="tag-btn" data-mood="angry">ANGRY</button>
+          <button type="button" class="tag-btn" data-mood="bouncy">BOUNCY</button>
+          <button type="button" class="tag-btn" data-mood="cinematic">CINEMATIC</button>
+          <button type="button" class="tag-btn" data-mood="glitchy">GLITCHY</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATALOG HEADER & ROWS -->
+    <section>
+      <div class="catalog-header">
+        <div>
+          <span style="font-size: 0.7rem; color: #888888; text-transform: uppercase;">MASTER RECORDING CATALOG</span>
+          <h2>RELEASES &amp; MASTER SOUND DISPATCH</h2>
+        </div>
+        <div class="catalog-stats" id="catalogStats">
+          SHOWING 6 RELEASES
+        </div>
+      </div>
+
+      <div class="track-rows" id="trackRowsContainer">
+        <!-- Rendered dynamically by script -->
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div>&copy; 2026 GIVE IT ALL RECORDS. ALL RIGHTS RESERVED.</div>
+      <div style="margin-top: 4px;">ENGINEERED &amp; PRODUCED BY LUCIANO LUPINI // REVISION 002 (audiostoreandsyncterminal_002)</div>
+      <div style="margin-top: 4px;">CDN: cdn.giveitallrecords.com (CLOUDFLARE R2 ZERO EGRESS)</div>
+    </footer>
+  </div>
+
+  <!-- PERSISTENT BOTTOM TRANSPORT BAR -->
+  <aside class="transport-dock" id="transportDock">
+    <div class="dock-content">
+      <div class="dock-track-info">
+        <button type="button" class="btn-play" id="dockPlayBtn" aria-label="Play or pause current track">▶</button>
+        <div>
+          <div style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #ffffff;" id="dockTrackTitle">
+            SUB-HARMONIC GLITCH
+          </div>
+          <div style="font-size: 0.65rem; color: #888888;" id="dockTrackSub">
+            PYRAMID // 320 KBPS MP3 PREVIEW
+          </div>
+        </div>
+      </div>
+
+      <div class="dock-scrubber-wrap">
+        <span id="dockCurTime">00:00</span>
+        <input type="range" class="audio-scrubber" id="dockScrubber" min="0" max="222" value="0">
+        <span id="dockTotalTime">03:42</span>
+      </div>
+
+      <button type="button" class="btn-acquire" id="dockAcquireBtn">
+        ACQUIRE [$10.00]
+      </button>
+    </div>
+  </aside>
+
+  <!-- CHECKOUT MODAL OVERLAY -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTrackTitle">DIRECT CHECKOUT // REV 002</div>
+        <span class="track-alias-pill" id="modalAliasPill">PYRAMID</span>
+      </div>
+
+      <div class="modal-specs">
+        <div><strong>FORMAT:</strong> 24-BIT / 48KHZ WAV MASTER (UNCOMPRESSED)</div>
+        <div><strong>FULFILLMENT:</strong> CLOUDFLARE R2 TOKEN (3 DOWNLOADS INCLUDED)</div>
+        <div><strong>PRICE:</strong> <span id="modalPriceVal">$10.00 USD</span></div>
+      </div>
+
+      <div style="border: 1px solid #333333; background: #0a0a0a; padding: 10px; font-size: 0.65rem; color: #aaaaaa; margin-bottom: 14px; line-height: 1.5;">
+        <strong style="color: #ffffff; display: block; margin-bottom: 3px;">ARCHIVE POLICY // 3 DOWNLOAD ATTEMPTS</strong>
+        Back up your uncompressed WAV file to external storage upon receipt. If you exhaust your 3 downloads or lose your master files, write to <span style="color: #ffffff;">contact@giveitallrecords.com</span> (we are an independent artist lab—allow up to 14 days for manual response).
+      </div>
+
+      <div class="modal-rails-box">
+        <div style="font-size: 0.7rem; color: #888888; text-transform: uppercase; margin-bottom: 8px;">
+          SELECT TRANSACTION RAIL:
+        </div>
+        <button type="button" class="rail-btn active" data-rail="crypto" id="railCrypto">
+          <span>[1] USDT / BTC (0% FEE DIRECT-TO-WALLET)</span>
+          <span>✓</span>
+        </button>
+        <button type="button" class="rail-btn" data-rail="payoneer" id="railPayoneer">
+          <span>[2] PAYONEER DIRECT CHECKOUT</span>
+          <span></span>
+        </button>
+        <button type="button" class="rail-btn" data-rail="email" id="railEmail">
+          <span>[3] DIRECT EMAIL ORDER // MANUAL SETTLEMENT</span>
+          <span></span>
+        </button>
+        <div style="font-size: 0.68rem; color: #aaaaaa; margin-top: 8px; border-top: 1px solid #222222; padding-top: 6px;" id="railDetailText">
+          DIRECT WOOCOMMERCE PARAMETER: ?add-to-cart=PRODUCT_ID (SKIPS CART STEPS)
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <a href="#" target="_blank" rel="noreferrer" class="btn-modal-checkout" id="btnModalProceed">
+          PROCEED TO CHECKOUT
+        </a>
+        <button type="button" class="btn-modal-close" id="btnModalClose">
+          CANCEL / CLOSE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CATALOG = [
+      {
+        id: 'GIAR-001',
+        title: 'Sub-Harmonic Glitch',
+        alias: 'PYRAMID',
+        category: 'Electronic',
+        subgenre: 'Drum & Bass / Glitch',
+        moods: ['moody', 'cinematic', 'glitchy'],
+        bpm: 128,
+        key: 'D Minor',
+        duration: '03:42',
+        durationSec: 222,
+        specs: '24-Bit / 48kHz WAV // Cloudflare R2 Master Token',
+        scope: 'Art Biennials, Sci-Fi Film Sync',
+        price: '10.00',
+        wooId: 101,
+        tags: ['sci-fi', 'space', 'dystopian', 'future', 'glitch', 'robot', 'cyberpunk', 'dark']
+      },
+      {
+        id: 'GIAR-002',
+        title: 'Boom Bap Vector',
+        alias: 'KNOX ORACLE',
+        category: 'Hip-Hop',
+        subgenre: 'Boom Bap',
+        moods: ['bouncy', 'angry', 'moody'],
+        bpm: 89,
+        key: 'F# Minor',
+        duration: '02:54',
+        durationSec: 174,
+        specs: '24-Bit / 48kHz WAV // Cloudflare R2 Master Token',
+        scope: 'Emcee Beat Lease, Streetwear Video',
+        price: '10.00',
+        wooId: 102,
+        tags: ['rap', 'bars', 'emcee', 'street', 'city', 'night', 'underground', 'vinyl', 'gritty', 'lofi', '90s']
+      },
+      {
+        id: 'GIAR-003',
+        title: 'Static Noise Loop',
+        alias: 'ESCAPADES',
+        category: 'Guitar Music',
+        subgenre: 'Noise Music',
+        moods: ['angry', 'cinematic'],
+        bpm: 142,
+        key: 'A Major',
+        duration: '03:18',
+        durationSec: 198,
+        specs: '24-Bit / 48kHz WAV // Cloudflare R2 Master Token',
+        scope: 'Action Scoring, Skate Video Sync',
+        price: '10.00',
+        wooId: 103,
+        tags: ['chase', 'fight', 'action', 'skate', 'punk', 'loud', 'aggressive', 'distortion', 'rebellion']
+      },
+      {
+        id: 'GIAR-004',
+        title: 'Analog Resonance',
+        alias: 'PYRAMID',
+        category: 'Electronic',
+        subgenre: 'Atmospheric Electronic',
+        moods: ['bouncy', 'moody'],
+        bpm: 122,
+        key: 'C Minor',
+        duration: '04:05',
+        durationSec: 245,
+        specs: '24-Bit / 48kHz WAV // Cloudflare R2 Master Token',
+        scope: 'Gallery Installation, Art Biennial',
+        price: '10.00',
+        wooId: 104,
+        tags: ['ambient', 'drone', 'meditation', 'installation', 'museum', 'peaceful', 'deep', 'modular']
+      },
+      {
+        id: 'GIAR-005',
+        title: 'Obsidian Cipher',
+        alias: 'KNOX ORACLE',
+        category: 'Hip-Hop',
+        subgenre: 'Lo-Fi Hip-Hop',
+        moods: ['moody', 'cinematic'],
+        bpm: 84,
+        key: 'G Minor',
+        duration: '03:10',
+        durationSec: 190,
+        specs: '24-Bit / 48kHz WAV // Cloudflare R2 Master Token',
+        scope: 'Emcee Vocal Track, Noir Score',
+        price: '10.00',
+        wooId: 105,
+        tags: ['rain', 'detective', 'noir', 'smoke', 'dark rap', 'late night', 'coffee', 'study']
+      },
+      {
+        id: 'GIAR-006',
+        title: 'Cathode Decay',
+        alias: 'ESCAPADES',
+        category: 'Guitar Music',
+        subgenre: 'Punk / Alternative',
+        moods: ['angry'],
+        bpm: 156,
+        key: 'E Minor',
+        duration: '02:48',
+        durationSec: 168,
+        specs: '24-Bit / 48kHz WAV // Cloudflare R2 Master Token',
+        scope: 'Indie Film Chase, Commercial Spot',
+        price: '10.00',
+        wooId: 106,
+        tags: ['riot', 'garage', 'speed', 'raw', 'live band', 'shouting', 'grunge', 'overdrive']
+      }
+    ];
+
+    let currentAlias = 'ALL';
+    let currentSubgenre = 'all';
+    let currentMood = 'all';
+    let searchQuery = '';
+    let activeTrack = CATALOG[0];
+    let isPlaying = false;
+    let playheadTime = 0;
+    let selectedRail = 'crypto';
+    let modalActiveTrack = null;
+
+    // FONT TOGGLE
+    const fontToggleBtn = document.getElementById('fontToggleBtn');
+    fontToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('font-mode-vt323');
+      const isVt = document.body.classList.contains('font-mode-vt323');
+      fontToggleBtn.textContent = isVt
+        ? 'FONT: VT323 [SWITCH TO SPACE MONO]'
+        : 'FONT: SPACE MONO [SWITCH TO VT323]';
+    });
+
+    // WEB AUDIO SYNTHESIZER
+    let audioCtx = null, osc1 = null, osc2 = null, lfo = null, gainNode = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function startSynth(track) {
+      initAudio();
+      stopSynth();
+      try {
+        osc1 = audioCtx.createOscillator();
+        osc2 = audioCtx.createOscillator();
+        lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        gainNode = audioCtx.createGain();
+
+        if (track.category === 'Electronic') {
+          osc1.type = 'sawtooth'; osc2.type = 'square';
+          osc1.frequency.setValueAtTime(110, audioCtx.currentTime);
+          osc2.frequency.setValueAtTime(220, audioCtx.currentTime);
+          filter.type = 'lowpass'; filter.frequency.setValueAtTime(750, audioCtx.currentTime);
+          lfo.frequency.setValueAtTime(5.5, audioCtx.currentTime);
+          lfoGain.gain.setValueAtTime(400, audioCtx.currentTime);
+        } else if (track.category === 'Hip-Hop') {
+          osc1.type = 'sine'; osc2.type = 'triangle';
+          osc1.frequency.setValueAtTime(55, audioCtx.currentTime);
+          osc2.frequency.setValueAtTime(165, audioCtx.currentTime);
+          filter.type = 'lowpass'; filter.frequency.setValueAtTime(450, audioCtx.currentTime);
+          lfo.frequency.setValueAtTime(1.5, audioCtx.currentTime);
+          lfoGain.gain.setValueAtTime(120, audioCtx.currentTime);
+        } else {
+          osc1.type = 'sawtooth'; osc2.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(82.4, audioCtx.currentTime);
+          osc2.frequency.setValueAtTime(164.8, audioCtx.currentTime);
+          filter.type = 'bandpass'; filter.frequency.setValueAtTime(1100, audioCtx.currentTime);
+          lfo.frequency.setValueAtTime(4.0, audioCtx.currentTime);
+          lfoGain.gain.setValueAtTime(500, audioCtx.currentTime);
+        }
+
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        gainNode.gain.setValueAtTime(0.18, audioCtx.currentTime);
+
+        osc1.connect(filter); osc2.connect(filter);
+        filter.connect(gainNode); gainNode.connect(audioCtx.destination);
+
+        osc1.start(); osc2.start(); lfo.start();
+      } catch (err) {}
+    }
+
+    function stopSynth() {
+      try {
+        if (osc1) { osc1.stop(); osc1.disconnect(); osc1 = null; }
+        if (osc2) { osc2.stop(); osc2.disconnect(); osc2 = null; }
+        if (lfo) { lfo.stop(); lfo.disconnect(); lfo = null; }
+        if (gainNode) { gainNode.disconnect(); gainNode = null; }
+      } catch (err) {}
+    }
+
+    // OSCILLOSCOPE CANVAS RENDER
+    const canvas = document.getElementById('oscilloscopeCanvas');
+    const ctx = canvas.getContext('2d');
+    let phase = 0;
+
+    function drawWave() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 20) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 15) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      ctx.strokeStyle = isPlaying ? '#ffffff' : '#444444';
+      ctx.lineWidth = isPlaying ? 1.5 : 1;
+      if (isPlaying) {
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 8;
+      }
+
+      ctx.beginPath();
+      const points = 160;
+      const slice = canvas.width / points;
+      let x = 0;
+
+      for (let i = 0; i <= points; i++) {
+        let y = canvas.height / 2;
+        if (isPlaying && activeTrack) {
+          const mult = activeTrack.category === 'Electronic' ? 0.35 : activeTrack.category === 'Hip-Hop' ? 0.15 : 0.25;
+          const amp = activeTrack.category === 'Electronic' ? 0.38 : activeTrack.category === 'Hip-Hop' ? 0.32 : 0.42;
+          const h1 = Math.sin(i * mult + phase) * amp;
+          const h2 = Math.cos(i * (mult * 2) - phase * 1.5) * (amp * 0.35);
+          y = (0.5 + h1 + h2) * canvas.height;
+        } else {
+          y = canvas.height / 2 + Math.sin(i * 0.05 + phase * 0.2) * 2;
+        }
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+        x += slice;
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      phase += isPlaying ? 0.12 : 0.02;
+      requestAnimationFrame(drawWave);
+    }
+    requestAnimationFrame(drawWave);
+
+    const scopeStatusText = document.getElementById('scopeStatusText');
+    const dockTrackTitle = document.getElementById('dockTrackTitle');
+    const dockTrackSub = document.getElementById('dockTrackSub');
+    const dockPlayBtn = document.getElementById('dockPlayBtn');
+    const dockCurTime = document.getElementById('dockCurTime');
+    const dockTotalTime = document.getElementById('dockTotalTime');
+    const dockScrubber = document.getElementById('dockScrubber');
+    const dockAcquireBtn = document.getElementById('dockAcquireBtn');
+
+    function updatePlaybackUI() {
+      if (isPlaying && activeTrack) {
+        scopeStatusText.textContent = `LIVE // ${activeTrack.alias} // "${activeTrack.title.toUpperCase()}" // 320 KBPS PREVIEW`;
+        dockTrackTitle.textContent = activeTrack.title;
+        dockTrackSub.textContent = `${activeTrack.alias} // 320 KBPS MP3 PREVIEW`;
+        dockPlayBtn.textContent = '⏸';
+        dockTotalTime.textContent = activeTrack.duration;
+        dockScrubber.max = activeTrack.durationSec;
+        dockAcquireBtn.textContent = `ACQUIRE [$${activeTrack.price}]`;
+      } else {
+        scopeStatusText.textContent = 'IDLE // WAITING FOR AUDIO ENGAGEMENT';
+        dockPlayBtn.textContent = '▶';
+      }
+    }
+
+    function togglePlayback(track) {
+      if (activeTrack?.id === track.id && isPlaying) {
+        isPlaying = false;
+        stopSynth();
+      } else {
+        activeTrack = track;
+        isPlaying = true;
+        playheadTime = 0;
+        startSynth(track);
+      }
+      updatePlaybackUI();
+      renderCatalog();
+    }
+
+    dockPlayBtn.addEventListener('click', () => {
+      if (activeTrack) togglePlayback(activeTrack);
+    });
+
+    setInterval(() => {
+      if (isPlaying && activeTrack) {
+        playheadTime++;
+        if (playheadTime > activeTrack.durationSec) {
+          playheadTime = 0;
+          isPlaying = false;
+          stopSynth();
+        }
+        const m = Math.floor(playheadTime / 60).toString().padStart(2, '0');
+        const s = (playheadTime % 60).toString().padStart(2, '0');
+        dockCurTime.textContent = `${m}:${s}`;
+        dockScrubber.value = playheadTime;
+      }
+    }, 1000);
+
+    const trackRowsContainer = document.getElementById('trackRowsContainer');
+    const catalogStats = document.getElementById('catalogStats');
+    const terminalStatusMsg = document.getElementById('terminalStatusMsg');
+    const terminalMatchCount = document.getElementById('terminalMatchCount');
+
+    function renderCatalog() {
+      const filtered = CATALOG.filter(track => {
+        if (currentAlias !== 'ALL' && track.alias !== currentAlias) return false;
+        if (currentSubgenre !== 'all' && !track.subgenre.toLowerCase().includes(currentSubgenre.toLowerCase())) return false;
+        if (currentMood !== 'all' && !track.moods.includes(currentMood)) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const tokens = q.split(/\s+/);
+          const corpus = [track.title, track.alias, track.category, track.subgenre, ...track.moods, ...track.tags, track.bpm.toString()].join(' ').toLowerCase();
+          const matches = tokens.some(tok => corpus.includes(tok));
+          if (!matches) return false;
+        }
+        return true;
+      });
+
+      catalogStats.textContent = `SHOWING ${filtered.length} RELEASES`;
+      terminalMatchCount.textContent = `SHOWING ${filtered.length} OF ${CATALOG.length} MASTER RECORDINGS`;
+
+      if (filtered.length === 0) {
+        trackRowsContainer.innerHTML = `
+          <div style="border: 1px solid #222; background: #0a0a0a; padding: 24px; text-align: center;">
+            <p style="font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 8px;">
+              NO RELEASES MATCHING CURRENT PARAMETERS
+            </p>
+            <button type="button" class="btn-acquire" onclick="resetFilters()">RESET ALL FILTERS</button>
+          </div>
+        `;
+        return;
+      }
+
+      trackRowsContainer.innerHTML = filtered.map(track => {
+        const isCurrent = activeTrack?.id === track.id;
+        const isCurPlaying = isCurrent && isPlaying;
+
+        return `
+          <div class="track-row ${isCurPlaying ? 'playing' : ''}">
+            <div class="track-left">
+              <div class="track-meta">
+                <span class="track-id">${track.id}</span>
+                <span class="track-alias-pill">${track.alias}</span>
+                <span class="track-genre-pill">${track.subgenre}</span>
+                <span class="track-specs-str">${track.bpm} BPM // ${track.key}</span>
+              </div>
+              <div class="track-title">${track.title}</div>
+              <div class="track-specs-badge">
+                ${track.specs} // SCOPE: ${track.scope}
+              </div>
+            </div>
+
+            <div class="track-player">
+              <button type="button" class="btn-play ${isCurPlaying ? 'active' : ''}" onclick="window.handleRowPlay('${track.id}')">
+                ${isCurPlaying ? '⏸' : '▶'}
+              </button>
+              <div class="player-progress-wrap">
+                <div class="player-time-row">
+                  <span>${isCurrent ? dockCurTime.textContent : '00:00'} / ${track.duration}</span>
+                  <span>${isCurPlaying ? 'AUDITIONING 320K' : '320K MP3'}</span>
+                </div>
+                <input type="range" class="audio-scrubber" min="0" max="${track.durationSec}" value="${isCurrent ? playheadTime : 0}" />
+              </div>
+            </div>
+
+            <div class="track-right">
+              <div class="price-box">
+                <div class="price-val">$${track.price} USD</div>
+                <div class="price-sub">USDT / BTC / PAYONEER</div>
+              </div>
+              <button type="button" class="btn-acquire" onclick="window.handleAcquire('${track.id}')">
+                ACQUIRE
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.handleRowPlay = (trackId) => {
+      const track = CATALOG.find(t => t.id === trackId);
+      if (track) togglePlayback(track);
+    };
+
+    window.handleAcquire = (trackId) => {
+      const track = CATALOG.find(t => t.id === trackId);
+      if (track) openCheckout(track);
+    };
+
+    window.resetFilters = () => {
+      currentAlias = 'ALL';
+      currentSubgenre = 'all';
+      currentMood = 'all';
+      searchQuery = '';
+      document.getElementById('terminalInput').value = '';
+      document.querySelectorAll('.alias-card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('#subgenreTagList .tag-btn').forEach(b => b.classList.toggle('active', b.dataset.sub === 'all'));
+      document.querySelectorAll('#moodTagList .tag-btn').forEach(b => b.classList.toggle('active', b.dataset.mood === 'all'));
+      terminalStatusMsg.textContent = 'SYS_EXEC // COMMAND & FILTER INTERPRETER READY';
+      renderCatalog();
+    };
+
+    // ALIAS CARD FILTERS
+    document.querySelectorAll('.alias-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const alias = card.dataset.alias;
+        if (currentAlias === alias) {
+          currentAlias = 'ALL';
+          card.classList.remove('active');
+        } else {
+          currentAlias = alias;
+          document.querySelectorAll('.alias-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+        }
+        renderCatalog();
+      });
+    });
+
+    // SUBGENRE TAGS
+    document.querySelectorAll('#subgenreTagList .tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#subgenreTagList .tag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSubgenre = btn.dataset.sub;
+        renderCatalog();
+      });
+    });
+
+    // MOOD TAGS
+    document.querySelectorAll('#moodTagList .tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#moodTagList .tag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMood = btn.dataset.mood;
+        renderCatalog();
+      });
+    });
+
+    // TERMINAL
+    const terminalInput = document.getElementById('terminalInput');
+    const terminalExecBtn = document.getElementById('terminalExecBtn');
+
+    function parseCommand() {
+      const cmd = terminalInput.value.trim().toLowerCase();
+      if (!cmd || cmd === 'reset' || cmd === 'clear') {
+        window.resetFilters();
+        return;
+      }
+      searchQuery = cmd;
+      terminalStatusMsg.textContent = `EXECUTE: QUERY "${cmd.toUpperCase()}"`;
+      renderCatalog();
+    }
+
+    terminalInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') parseCommand();
+      else {
+        searchQuery = terminalInput.value.trim();
+        renderCatalog();
+      }
+    });
+    terminalExecBtn.addEventListener('click', parseCommand);
+
+    // MODAL CHECKOUT
+    const checkoutModal = document.getElementById('checkoutModal');
+    const modalTrackTitle = document.getElementById('modalTrackTitle');
+    const modalAliasPill = document.getElementById('modalAliasPill');
+    const modalPriceVal = document.getElementById('modalPriceVal');
+    const btnModalProceed = document.getElementById('btnModalProceed');
+    const btnModalClose = document.getElementById('btnModalClose');
+    const railDetailText = document.getElementById('railDetailText');
+
+    function openCheckout(track) {
+      modalActiveTrack = track;
+      modalTrackTitle.textContent = `${track.title} // REV 002`;
+      modalAliasPill.textContent = track.alias;
+      modalPriceVal.textContent = `$${track.price} USD`;
+      selectPaymentRail('crypto');
+      checkoutModal.classList.add('active');
+    }
+
+    function closeCheckout() {
+      checkoutModal.classList.remove('active');
+      modalActiveTrack = null;
+    }
+
+    function selectPaymentRail(rail) {
+      selectedRail = rail;
+      document.querySelectorAll('.rail-btn').forEach(b => {
+        const isMatched = b.dataset.rail === rail;
+        b.classList.toggle('active', isMatched);
+        b.querySelector('span:last-child').textContent = isMatched ? '✓' : '';
+      });
+
+      if (!modalActiveTrack) return;
+
+      if (rail === 'crypto') {
+        railDetailText.textContent = `DIRECT WOOCOMMERCE PARAMETER: https://giveitallrecords.com/shop/?add-to-cart=${modalActiveTrack.wooId}`;
+        btnModalProceed.href = `https://giveitallrecords.com/shop/?add-to-cart=${modalActiveTrack.wooId}`;
+        btnModalProceed.textContent = 'PROCEED TO CRYPTO CHECKOUT';
+      } else if (rail === 'payoneer') {
+        railDetailText.textContent = 'DISPATCHES TO PAYONEER GATEWAY FOR CREDIT CARD / ACH SETTLEMENT.';
+        btnModalProceed.href = `https://giveitallrecords.com/shop/?add-to-cart=${modalActiveTrack.wooId}&gateway=payoneer`;
+        btnModalProceed.textContent = 'PROCEED VIA PAYONEER';
+      } else {
+        railDetailText.textContent = 'DISPATCHES PRE-FILLED EMAIL WITH 24-BIT MASTER CONTRACT SPECS.';
+        btnModalProceed.href = `mailto:contact@giveitallrecords.com?subject=ORDER%20//%20${encodeURIComponent(modalActiveTrack.title)}&body=TRACK:%20${encodeURIComponent(modalActiveTrack.title)}%0ACATALOG:%20${modalActiveTrack.id}%0APRICE:%20$${modalActiveTrack.price}%0AFORMAT:%2024-BIT/48KHZ%20WAV`;
+        btnModalProceed.textContent = 'LAUNCH PRE-FILLED EMAIL';
+      }
+    }
+
+    document.querySelectorAll('.rail-btn').forEach(btn => {
+      btn.addEventListener('click', () => selectPaymentRail(btn.dataset.rail));
+    });
+
+    btnModalClose.addEventListener('click', closeCheckout);
+    checkoutModal.addEventListener('click', (e) => {
+      if (e.target === checkoutModal) closeCheckout();
+    });
+
+    dockAcquireBtn.addEventListener('click', () => {
+      if (activeTrack) openCheckout(activeTrack);
+    });
+
+    renderCatalog();
+    updatePlaybackUI();
+  </script>
+</body>
+</html>

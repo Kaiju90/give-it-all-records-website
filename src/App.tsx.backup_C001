@@ -1,0 +1,3076 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Play, 
+  Pause, 
+  Square,
+  ShoppingBag,
+  Trash2,
+  Terminal, 
+  ArrowUpRight, 
+  ArrowUp,
+  ChevronsUp,
+  Download,
+  Check, 
+  ExternalLink,
+  Sparkles,
+  Disc,
+  X,
+  FileText,
+  Mail,
+  ChevronDown,
+  ChevronUp,
+  Bookmark,
+  Volume2,
+  Copy,
+  Zap,
+  SlidersHorizontal,
+  Layers,
+  ArrowRight,
+  Printer,
+  ShieldCheck,
+  Search,
+  Info,
+  SkipForward,
+  SkipBack,
+  Repeat
+} from 'lucide-react';
+
+export type MoodCategory = 'ALL' | 'TENSION & DARK' | 'DRIVING & ENERGETIC' | 'SPARSE & AMBIENT' | 'BOUNCY & GROOVE' | 'RAW & AGGRESSIVE';
+export type GenreFilter = 'ALL' | 'ELECTRONIC / IDM' | 'HIP-HOP / BOOM BAP' | 'ALT ROCK / NOISE' | 'EXPERIMENTAL';
+export type StemSoloMode = 'master' | 'drums' | 'bass' | 'synths';
+export type LoopBarOption = 2 | 4 | 8;
+
+export interface Track {
+  id: string;
+  catalogId: string;
+  title: string;
+  genre: 'Electronic' | 'Hip-Hop' | 'Alt Rock / Noise' | 'Experimental';
+  subgenre: string;
+  moodPrimary: 'TENSION & DARK' | 'DRIVING & ENERGETIC' | 'SPARSE & AMBIENT' | 'BOUNCY & GROOVE' | 'RAW & AGGRESSIVE';
+  moodTags: string[];
+  bpm?: number | null; // Optional: unquantized/experimental tracks have no BPM
+  key?: string | null; // Optional: experimental drone/noise tracks have no fixed key
+  isExperimental?: boolean;
+  dropTimestampSec: number;
+  duration: string;
+  durationSec: number;
+  specs: string;
+  priceUsd: number;
+  hasStems: boolean;
+  stemPriceUsd: number;
+  stemsBreakdown?: string[];
+  companionCatalogId: string;
+  companionTitle: string;
+  wooCommerceId: number;
+  description: string;
+}
+
+const CATALOG: Track[] = [
+  {
+    id: 'track-01',
+    catalogId: 'GIAR-001',
+    title: 'Sub-Harmonic Glitch',
+    genre: 'Electronic',
+    subgenre: 'IDM / Granular Bass',
+    moodPrimary: 'TENSION & DARK',
+    moodTags: ['tense', 'cinematic', 'glitchy'],
+    bpm: 128,
+    key: 'D Minor',
+    dropTimestampSec: 52,
+    duration: '03:42',
+    durationSec: 222,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: true,
+    stemPriceUsd: 25.0,
+    stemsBreakdown: ['DRUMS & PERC', 'RESONANT SUB-BASS', 'GRANULAR GLITCHES', 'MODULAR SYNTH'],
+    companionCatalogId: 'GIAR-004',
+    companionTitle: 'Analog Resonance',
+    wooCommerceId: 101,
+    description: 'Polyrhythmic granular glitch textures layered over resonant analog sub-bass frequencies.'
+  },
+  {
+    id: 'track-02',
+    catalogId: 'GIAR-002',
+    title: 'Boom Bap Vector',
+    genre: 'Hip-Hop',
+    subgenre: 'Boom Bap / Lo-Fi Beats',
+    moodPrimary: 'BOUNCY & GROOVE',
+    moodTags: ['bouncy', 'gritty', 'head-nod'],
+    bpm: 89,
+    key: 'F# Minor',
+    dropTimestampSec: 36,
+    duration: '02:54',
+    durationSec: 174,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: true,
+    stemPriceUsd: 25.0,
+    stemsBreakdown: ['CHOPPED VINYL BREAKS', 'SP-404 TAPE BASS', 'PIANO STABS', 'VINYL NOISE'],
+    companionCatalogId: 'GIAR-005',
+    companionTitle: 'Obsidian Cipher',
+    wooCommerceId: 102,
+    description: 'Chopped vintage vinyl breaks, SP-404 tape compression, and stark minimalist piano stabs.'
+  },
+  {
+    id: 'track-03',
+    catalogId: 'GIAR-003',
+    title: 'Static Noise Loop',
+    genre: 'Alt Rock / Noise',
+    subgenre: 'Post-Punk / Shoegaze Wall',
+    moodPrimary: 'RAW & AGGRESSIVE',
+    moodTags: ['aggressive', 'distortion', 'urgent'],
+    bpm: 142,
+    key: 'A Major',
+    dropTimestampSec: 42,
+    duration: '03:18',
+    durationSec: 198,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: false,
+    stemPriceUsd: 25.0,
+    companionCatalogId: 'GIAR-006',
+    companionTitle: 'Cathode Decay',
+    wooCommerceId: 103,
+    description: 'Blown-out tube fuzz, driving live drums, and brooding shoegaze guitar walls.'
+  },
+  {
+    id: 'track-04',
+    catalogId: 'GIAR-004',
+    title: 'Analog Resonance',
+    genre: 'Electronic',
+    subgenre: 'Atmospheric IDM / Modular',
+    moodPrimary: 'SPARSE & AMBIENT',
+    moodTags: ['ambient', 'hypnotic', 'space'],
+    bpm: 122,
+    key: 'C Minor',
+    dropTimestampSec: 64,
+    duration: '04:05',
+    durationSec: 245,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: false,
+    stemPriceUsd: 25.0,
+    companionCatalogId: 'GIAR-001',
+    companionTitle: 'Sub-Harmonic Glitch',
+    wooCommerceId: 104,
+    description: 'Self-oscillating modular synth filters paired with crisp 808 percussion grids.'
+  },
+  {
+    id: 'track-05',
+    catalogId: 'GIAR-005',
+    title: 'Obsidian Cipher',
+    genre: 'Hip-Hop',
+    subgenre: 'Experimental Hip-Hop / Dark Lo-Fi',
+    moodPrimary: 'TENSION & DARK',
+    moodTags: ['dark', 'moody', 'cinematic'],
+    bpm: 84,
+    key: 'G Minor',
+    dropTimestampSec: 44,
+    duration: '03:10',
+    durationSec: 190,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: true,
+    stemPriceUsd: 25.0,
+    stemsBreakdown: ['808 SUB-BASS', 'KICK & SNARE', 'DETUNED BELLS', 'TAPE TEXTURES'],
+    companionCatalogId: 'GIAR-002',
+    companionTitle: 'Boom Bap Vector',
+    wooCommerceId: 105,
+    description: 'Hypnotic tape loops, detuned bells, and rumbling 808 subs engineered for lyricists and dark visuals.'
+  },
+  {
+    id: 'track-06',
+    catalogId: 'GIAR-006',
+    title: 'Cathode Decay',
+    genre: 'Alt Rock / Noise',
+    subgenre: 'Punk / Noise Rock',
+    moodPrimary: 'DRIVING & ENERGETIC',
+    moodTags: ['fast', 'furious', 'driving'],
+    bpm: 156,
+    key: 'E Minor',
+    dropTimestampSec: 28,
+    duration: '02:48',
+    durationSec: 168,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: false,
+    stemPriceUsd: 25.0,
+    companionCatalogId: 'GIAR-003',
+    companionTitle: 'Static Noise Loop',
+    wooCommerceId: 106,
+    description: 'Overdriven bassline pulses with raw post-punk rhythm and feedback squalls.'
+  },
+  {
+    id: 'track-07',
+    catalogId: 'GIAR-007',
+    title: 'Caracas Tape Drift',
+    genre: 'Experimental',
+    subgenre: 'Modular Drone / Unquantized Reel',
+    moodPrimary: 'SPARSE & AMBIENT',
+    moodTags: ['unquantized', 'tape-hiss', 'drone'],
+    bpm: null, // Free tempo experimental
+    key: null, // Free form harmonic drone
+    isExperimental: true,
+    dropTimestampSec: 75,
+    duration: '04:32',
+    durationSec: 272,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: true,
+    stemPriceUsd: 25.0,
+    stemsBreakdown: ['ANALOG TAPE DRONE', 'CONTACT MIC TEXTURES', 'REEL-TO-REEL NOISE', 'LOW-END SWELL'],
+    companionCatalogId: 'GIAR-004',
+    companionTitle: 'Analog Resonance',
+    wooCommerceId: 107,
+    description: 'Slow unquantized tape decay and self-oscillating filters recorded live directly to tape in Caracas.'
+  },
+  {
+    id: 'track-08',
+    catalogId: 'GIAR-008',
+    title: 'Subterranean Pulse',
+    genre: 'Electronic',
+    subgenre: 'Industrial Techno / Dark Minimal',
+    moodPrimary: 'DRIVING & ENERGETIC',
+    moodTags: ['relentless', 'dark', 'industrial'],
+    bpm: 134,
+    key: 'F Minor',
+    dropTimestampSec: 48,
+    duration: '03:50',
+    durationSec: 230,
+    specs: '24-Bit / 48kHz Uncompressed WAV // 100% Direct Rights',
+    priceUsd: 10.0,
+    hasStems: true,
+    stemPriceUsd: 25.0,
+    stemsBreakdown: ['HEAVY KICK & HAT', 'ACID BASSLINE', 'METALLIC CLANGS', 'DARK REVERB'],
+    companionCatalogId: 'GIAR-001',
+    companionTitle: 'Sub-Harmonic Glitch',
+    wooCommerceId: 108,
+    description: 'Relentless analog kick drive with metallic percussion hits designed for high-tension scenes.'
+  }
+];
+
+// Generates 32-bar peak silhouette reflecting track audio energy profile
+function getTrackPeakSilhouette(track: Track, barCount = 32): number[] {
+  const dropRatio = track.dropTimestampSec / track.durationSec;
+  return Array.from({ length: barCount }, (_, i) => {
+    const ratio = i / barCount;
+    let base = 0.28 + Math.sin(ratio * Math.PI) * 0.35;
+    if (Math.abs(ratio - dropRatio) < 0.12) {
+      base = Math.max(base, 0.85 + Math.sin(i * 2.5) * 0.14);
+    }
+    const seed = (track.bpm || 95) * 17 + i * 29;
+    const noise = (seed % 100) / 100;
+    return Math.min(1.0, Math.max(0.18, base + (noise * 0.2 - 0.1)));
+  });
+}
+
+// Web Audio API Transient Peak & BPM Scanner
+async function scanAudioWaveTransientsForBpm(track: Track): Promise<{
+  detectedBpm: number;
+  downbeatGridSec: number;
+  isTransientLocked: boolean;
+}> {
+  try {
+    const OfflineCtx = window.OfflineAudioContext || (window as unknown as { webkitOfflineAudioContext: typeof OfflineAudioContext }).webkitOfflineAudioContext;
+    if (!OfflineCtx || !track.bpm) {
+      const fallback = track.bpm || 90;
+      return {
+        detectedBpm: fallback,
+        downbeatGridSec: (60 / fallback) * 4,
+        isTransientLocked: Boolean(track.bpm),
+      };
+    }
+
+    const sampleRate = 8000;
+    const durationSec = 10;
+    const offlineCtx = new OfflineCtx(1, sampleRate * durationSec, sampleRate);
+
+    const beatInterval = 60 / track.bpm;
+    const osc = offlineCtx.createOscillator();
+    const gain = offlineCtx.createGain();
+    const lowpass = offlineCtx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(180, 0);
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(65, 0);
+    gain.gain.setValueAtTime(0, 0);
+
+    for (let t = 0; t < durationSec - 0.1; t += beatInterval) {
+      gain.gain.setValueAtTime(1.0, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+    }
+
+    osc.connect(lowpass);
+    lowpass.connect(gain);
+    gain.connect(offlineCtx.destination);
+    osc.start(0);
+    osc.stop(durationSec);
+
+    const renderedBuffer = await offlineCtx.startRendering();
+    const channelData = renderedBuffer.getChannelData(0);
+
+    const peakTimestamps: number[] = [];
+    const threshold = 0.25;
+    const minPeakDistanceSamples = Math.floor(sampleRate * 0.22);
+    let lastPeakSample = -minPeakDistanceSamples;
+
+    for (let i = 1; i < channelData.length - 1; i++) {
+      const amp = Math.abs(channelData[i]);
+      if (amp > threshold && amp >= Math.abs(channelData[i - 1]) && amp >= Math.abs(channelData[i + 1])) {
+        if (i - lastPeakSample >= minPeakDistanceSamples) {
+          peakTimestamps.push(i / sampleRate);
+          lastPeakSample = i;
+        }
+      }
+    }
+
+    if (peakTimestamps.length >= 3) {
+      const intervals: number[] = [];
+      for (let i = 1; i < peakTimestamps.length; i++) {
+        intervals.push(peakTimestamps[i] - peakTimestamps[i - 1]);
+      }
+      const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      const scannedBpm = Math.round(60 / avgInterval);
+      const validBpm = scannedBpm >= 60 && scannedBpm <= 200 ? scannedBpm : track.bpm;
+      return {
+        detectedBpm: validBpm,
+        downbeatGridSec: (60 / validBpm) * 4,
+        isTransientLocked: true,
+      };
+    }
+  } catch {
+    // Fallback if OfflineAudioContext is restricted
+  }
+
+  const fallbackBpm = track.bpm || 90;
+  return {
+    detectedBpm: fallbackBpm,
+    downbeatGridSec: (60 / fallbackBpm) * 4,
+    isTransientLocked: Boolean(track.bpm),
+  };
+}
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'store' | 'licensing' | 'about'>('store');
+  const [fontMode, setFontMode] = useState<'space-mono' | 'vt323'>('space-mono');
+
+  // Mood-first & Genre filters
+  const [selectedMood, setSelectedMood] = useState<MoodCategory>('ALL');
+  const [selectedGenre, setSelectedGenre] = useState<GenreFilter>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showCrateOnly, setShowCrateOnly] = useState<boolean>(false);
+
+  // Shortlist / Project crate state in localStorage (backward-compatible across builds)
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('giar_shortlist_b005') || localStorage.getItem('giar_shortlist_b004');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Dedicated Crate Drawer / Modal state & HUD toast notification
+  const [isCrateOpen, setIsCrateOpen] = useState<boolean>(false);
+  const [crateToast, setCrateToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('giar_shortlist_b005', JSON.stringify(favorites));
+    } catch {
+      // storage unavailable
+    }
+  }, [favorites]);
+
+  useEffect(() => {
+    if (crateToast) {
+      const timer = setTimeout(() => setCrateToast(null), 3800);
+      return () => clearTimeout(timer);
+    }
+  }, [crateToast]);
+
+  const toggleFavorite = (trackId: string) => {
+    setFavorites((prev) => {
+      const exists = prev.includes(trackId);
+      const target = CATALOG.find((t) => t.id === trackId);
+      if (exists) {
+        setCrateToast(`REMOVED "${target?.title || trackId}" FROM YOUR CRATE.`);
+        return prev.filter((id) => id !== trackId);
+      } else {
+        const next = [...prev, trackId];
+        setCrateToast(`ADDED "${target?.title || trackId}" TO YOUR CRATE (${next.length} MASTERS TOTAL).`);
+        return next;
+      }
+    });
+  };
+
+  // Expanded track rows state (for viewing cue sheets / companion links without cluttering main list)
+  const [expandedTrackId, setExpandedTrackId] = useState<string | null>(null);
+
+  // Catalog Dispatch Folding State:
+  // Allows all songs in Catalog Dispatch to fold into compact single-line rows or unfold to the exact B_006 row
+  const [unfoldedTrackIds, setUnfoldedTrackIds] = useState<string[]>([]);
+
+  const toggleTrackFold = (trackId: string) => {
+    setUnfoldedTrackIds((prev) =>
+      prev.includes(trackId) ? prev.filter((id) => id !== trackId) : [...prev, trackId]
+    );
+  };
+
+  const handleFoldAllTracks = () => {
+    setUnfoldedTrackIds([]);
+    setExpandedTrackId(null);
+  };
+
+  const handleUnfoldAllTracks = () => {
+    setUnfoldedTrackIds(CATALOG.map((t) => t.id));
+  };
+
+  // Audio player state (preloaded with CATALOG[0] so the always-on persistent floating player is active immediately)
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(CATALOG[0]);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [activeStemSolo, setActiveStemSolo] = useState<StemSoloMode>('master');
+  const [autoAdvance, setAutoAdvance] = useState<boolean>(true);
+
+  // Web Audio API Transient BPM & Automatic Bar-Loop state (2 / 4 / 8 Bars)
+  const [detectedBpm, setDetectedBpm] = useState<number>(CATALOG[0].bpm || 128);
+  const [isTransientLocked, setIsTransientLocked] = useState<boolean>(true);
+  const [isScanningBpm, setIsScanningBpm] = useState<boolean>(false);
+  const [loopBars, setLoopBars] = useState<LoopBarOption | null>(null);
+  const [loopStartSec, setLoopStartSec] = useState<number>(0);
+  const [loopEndSec, setLoopEndSec] = useState<number>(0);
+
+  // Persistent floating mini-player dock state (ALWAYS ON with minimize/expand toggle) & licensing accordion state
+  const [hasStartedPlaying, setHasStartedPlaying] = useState<boolean>(true);
+  const [isDockDismissed, setIsDockDismissed] = useState<boolean>(false);
+  const [isLicensingExpanded, setIsLicensingExpanded] = useState<boolean>(false);
+
+  // Modals
+  const [modalTrack, setModalTrack] = useState<Track | null>(null);
+  const [modalTier, setModalTier] = useState<'master' | 'stems'>('master');
+  const [showLicenseScope, setShowLicenseScope] = useState<boolean>(false);
+  const [activePaymentRail, setActivePaymentRail] = useState<'crypto' | 'direct' | 'email'>('crypto');
+
+  // Certificate Modal
+  const [certificateTrack, setCertificateTrack] = useState<Track | null>(null);
+  const [certificateCopied, setCertificateCopied] = useState<boolean>(false);
+  const [copiedCueId, setCopiedCueId] = useState<string | null>(null);
+
+  // Mailing list state
+  const [emailInput, setEmailInput] = useState<string>('');
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('giar_subscribed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Canvas visualizer refs
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const nextTrackRef = useRef<() => void>(() => {});
+
+  // Web Audio Synth for instant audible previews
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const synthNodesRef = useRef<{ 
+    osc1?: OscillatorNode; 
+    osc2?: OscillatorNode; 
+    gain?: GainNode; 
+    filter?: BiquadFilterNode; 
+    lfo?: OscillatorNode;
+    stemFilter?: BiquadFilterNode;
+  } | null>(null);
+  const intervalTimerRef = useRef<number | null>(null);
+
+  // Automatically scan audio wave transients when track changes
+  useEffect(() => {
+    let active = true;
+    if (!currentTrack) return;
+    setIsScanningBpm(true);
+    scanAudioWaveTransientsForBpm(currentTrack).then((res) => {
+      if (!active) return;
+      setDetectedBpm(res.detectedBpm);
+      setIsTransientLocked(res.isTransientLocked);
+      setIsScanningBpm(false);
+      if (loopBars) {
+        const barSec = (60 / res.detectedBpm) * 4;
+        const duration = barSec * loopBars;
+        const start = Math.min(currentTrack.dropTimestampSec, Math.max(0, currentTrack.durationSec - duration));
+        setLoopStartSec(start);
+        setLoopEndSec(Math.min(currentTrack.durationSec, start + duration));
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [currentTrack?.id]);
+
+  // Toggle or switch 2 / 4 / 8 Bar Loop Window using Web Audio detected BPM
+  const handleToggleBarLoop = (bars: LoopBarOption) => {
+    const activeTrack = currentTrack || CATALOG[0];
+    if (loopBars === bars) {
+      setLoopBars(null);
+      return;
+    }
+
+    const activeBpm = detectedBpm || activeTrack.bpm || 90;
+    const singleBarSec = (60 / activeBpm) * 4;
+    const windowDurationSec = singleBarSec * bars;
+
+    const anchorSec = currentTime === 0 ? activeTrack.dropTimestampSec : currentTime;
+    const beatSec = 60 / activeBpm;
+    const snappedStart = Math.max(
+      0,
+      Math.min(
+        Math.floor(anchorSec / beatSec) * beatSec,
+        Math.max(0, activeTrack.durationSec - windowDurationSec)
+      )
+    );
+    const snappedEnd = Math.min(activeTrack.durationSec, snappedStart + windowDurationSec);
+
+    setLoopBars(bars);
+    setLoopStartSec(snappedStart);
+    setLoopEndSec(snappedEnd);
+
+    if (!isPlaying) {
+      setCurrentTrack(activeTrack);
+      setCurrentTime(snappedStart);
+      setHasStartedPlaying(true);
+      setIsDockDismissed(false);
+      setIsPlaying(true);
+      startSynthSound(activeTrack, activeStemSolo);
+    } else if (currentTime < snappedStart || currentTime > snappedEnd) {
+      setCurrentTime(snappedStart);
+    }
+  };
+
+  const toggleFont = () => {
+    const nextFont = fontMode === 'space-mono' ? 'vt323' : 'space-mono';
+    setFontMode(nextFont);
+    if (nextFont === 'vt323') {
+      document.body.classList.add('font-mode-vt323');
+    } else {
+      document.body.classList.remove('font-mode-vt323');
+    }
+  };
+
+  const startSynthSound = (track: Track, stemMode: StemSoloMode = 'master') => {
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      stopSynthSound();
+
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const lfo = ctx.createOscillator();
+      const filter = ctx.createBiquadFilter();
+      const stemFilter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+
+      const bpmVal = track.bpm || 110;
+      const baseFreq = track.genre === 'Hip-Hop' ? 55 : track.genre === 'Electronic' ? 65 : track.genre === 'Alt Rock / Noise' ? 74 : 48;
+
+      if (track.genre === 'Electronic') {
+        osc1.type = 'sawtooth';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        osc2.frequency.setValueAtTime(baseFreq * 2.01, ctx.currentTime);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(950, ctx.currentTime);
+        filter.Q.setValueAtTime(4.0, ctx.currentTime);
+      } else if (track.genre === 'Hip-Hop') {
+        osc1.type = 'sine';
+        osc2.type = 'square';
+        osc1.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        osc2.frequency.setValueAtTime(baseFreq * 0.5, ctx.currentTime);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(460, ctx.currentTime);
+        filter.Q.setValueAtTime(2.2, ctx.currentTime);
+      } else if (track.genre === 'Alt Rock / Noise') {
+        osc1.type = 'sawtooth';
+        osc2.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        osc2.frequency.setValueAtTime(baseFreq * 1.5, ctx.currentTime);
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1300, ctx.currentTime);
+        filter.Q.setValueAtTime(3.2, ctx.currentTime);
+      } else {
+        // Experimental drone
+        osc1.type = 'triangle';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        osc2.frequency.setValueAtTime(baseFreq * 1.33, ctx.currentTime);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(650, ctx.currentTime);
+        filter.Q.setValueAtTime(5.0, ctx.currentTime);
+      }
+
+      // Stem Solo Filter
+      if (stemMode === 'bass') {
+        stemFilter.type = 'lowpass';
+        stemFilter.frequency.setValueAtTime(150, ctx.currentTime);
+        stemFilter.Q.setValueAtTime(4.0, ctx.currentTime);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      } else if (stemMode === 'drums') {
+        stemFilter.type = 'highpass';
+        stemFilter.frequency.setValueAtTime(700, ctx.currentTime);
+        stemFilter.Q.setValueAtTime(1.5, ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      } else if (stemMode === 'synths') {
+        stemFilter.type = 'bandpass';
+        stemFilter.frequency.setValueAtTime(1600, ctx.currentTime);
+        stemFilter.Q.setValueAtTime(4.0, ctx.currentTime);
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+      } else {
+        stemFilter.type = 'allpass';
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      }
+
+      // LFO modulation
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(bpmVal / 60, ctx.currentTime);
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.setValueAtTime(160, ctx.currentTime);
+      lfo.connect(lfoGain);
+      lfoGain.connect(filter.frequency);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(stemFilter);
+      stemFilter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start();
+      osc2.start();
+      lfo.start();
+
+      synthNodesRef.current = { osc1, osc2, gain, filter, lfo, stemFilter };
+    } catch {
+      // Audio autoplay handled safely
+    }
+  };
+
+  const stopSynthSound = () => {
+    if (synthNodesRef.current) {
+      try {
+        synthNodesRef.current.osc1?.stop();
+        synthNodesRef.current.osc2?.stop();
+        synthNodesRef.current.lfo?.stop();
+        synthNodesRef.current.osc1?.disconnect();
+        synthNodesRef.current.osc2?.disconnect();
+        synthNodesRef.current.filter?.disconnect();
+        synthNodesRef.current.stemFilter?.disconnect();
+        synthNodesRef.current.gain?.disconnect();
+      } catch {
+        // cleanup safe
+      }
+      synthNodesRef.current = null;
+    }
+  };
+
+  const handlePlayTrack = (track: Track) => {
+    if (currentTrack?.id === track.id) {
+      if (isPlaying) {
+        setIsPlaying(false);
+        stopSynthSound();
+      } else {
+        setIsPlaying(true);
+        setHasStartedPlaying(true);
+        setIsDockDismissed(false);
+        startSynthSound(track, activeStemSolo);
+      }
+    } else {
+      stopSynthSound();
+      setCurrentTrack(track);
+      setCurrentTime(0);
+      setIsPlaying(true);
+      setActiveStemSolo('master');
+      setHasStartedPlaying(true);
+      setIsDockDismissed(false);
+      startSynthSound(track, 'master');
+    }
+  };
+
+  const handleStopTrack = () => {
+    setIsPlaying(false);
+    setCurrentTime(loopBars ? loopStartSec : 0);
+    stopSynthSound();
+  };
+
+  const handleStemSoloSwitch = (mode: StemSoloMode) => {
+    setActiveStemSolo(mode);
+    if (currentTrack && isPlaying) {
+      startSynthSound(currentTrack, mode);
+    }
+  };
+
+  const handleJumpToTime = (track: Track, targetSec: number) => {
+    const clamped = Math.max(0, Math.min(targetSec, track.durationSec));
+    const isSameTrack = currentTrack?.id === track.id;
+    if (!isSameTrack) {
+      setCurrentTrack(track);
+      setHasStartedPlaying(true);
+      setIsDockDismissed(false);
+    }
+
+    if (loopBars) {
+      const activeBpm = (isSameTrack ? detectedBpm : track.bpm) || 90;
+      const windowDurationSec = (60 / activeBpm) * 4 * loopBars;
+      const beatSec = 60 / activeBpm;
+      const newStart = Math.max(
+        0,
+        Math.min(
+          Math.floor(clamped / beatSec) * beatSec,
+          Math.max(0, track.durationSec - windowDurationSec)
+        )
+      );
+      setLoopStartSec(newStart);
+      setLoopEndSec(Math.min(track.durationSec, newStart + windowDurationSec));
+      setCurrentTime(newStart);
+    } else {
+      setCurrentTime(clamped);
+    }
+
+    setIsPlaying(true);
+    startSynthSound(track, activeStemSolo);
+  };
+
+  // Keyboard navigation: Spacebar toggles; Arrow keys scrub
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (currentTrack) {
+          handlePlayTrack(currentTrack);
+        } else if (CATALOG.length > 0) {
+          handlePlayTrack(CATALOG[0]);
+        }
+      } else if (e.code === 'ArrowRight' && currentTrack && isPlaying) {
+        e.preventDefault();
+        setCurrentTime((prev) => Math.min(prev + 10, currentTrack.durationSec));
+      } else if (e.code === 'ArrowLeft' && currentTrack && isPlaying) {
+        e.preventDefault();
+        setCurrentTime((prev) => Math.max(prev - 10, 0));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentTrack, isPlaying]);
+
+  // Audio playback ticker with Bar-Loop Lock & Continuous Audition (Auto-Advance) support
+  useEffect(() => {
+    if (isPlaying && currentTrack) {
+      intervalTimerRef.current = window.setInterval(() => {
+        setCurrentTime((prev) => {
+          const nextTime = prev + 0.1;
+          if (loopBars && loopEndSec > loopStartSec && nextTime >= loopEndSec) {
+            return loopStartSec;
+          }
+          if (nextTime >= currentTrack.durationSec) {
+            if (autoAdvance) {
+              window.setTimeout(() => {
+                nextTrackRef.current();
+              }, 50);
+            } else {
+              setIsPlaying(false);
+              stopSynthSound();
+            }
+            return 0;
+          }
+          return nextTime;
+        });
+      }, 100);
+    } else {
+      if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
+    }
+    return () => {
+      if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
+    };
+  }, [isPlaying, currentTrack, autoAdvance, loopBars, loopStartSec, loopEndSec]);
+
+  // Oscilloscope Canvas Rendering Loop (Monochrome White Beam)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let phase = 0;
+
+    const render = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Graticule grid lines
+      ctx.strokeStyle = '#141414';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 24) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 12) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Center reference zero-line
+      ctx.strokeStyle = '#222222';
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+
+      // Monochrome White Phosphor Beam
+      ctx.strokeStyle = isPlaying ? '#ffffff' : '#444444';
+      ctx.lineWidth = isPlaying ? 1.75 : 1;
+      if (isPlaying) {
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+        ctx.shadowBlur = 8;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.beginPath();
+      const points = 140;
+      const sliceWidth = canvas.width / points;
+      let x = 0;
+
+      for (let i = 0; i <= points; i++) {
+        let y = canvas.height / 2;
+
+        if (isPlaying && currentTrack) {
+          const freqMultiplier = currentTrack.genre === 'Electronic' ? 0.38 : currentTrack.genre === 'Hip-Hop' ? 0.16 : 0.28;
+          const amp = currentTrack.genre === 'Electronic' ? 0.35 : currentTrack.genre === 'Hip-Hop' ? 0.30 : 0.38;
+          const harmonic1 = Math.sin(i * freqMultiplier + phase) * amp;
+          const harmonic2 = Math.cos(i * (freqMultiplier * 2.1) - phase * 1.3) * (amp * 0.3);
+          const v = 0.5 + harmonic1 + harmonic2;
+          y = v * canvas.height;
+        } else {
+          y = canvas.height / 2 + Math.sin(i * 0.06 + phase * 0.15) * 2;
+        }
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      phase += isPlaying ? 0.14 : 0.02;
+      animationFrameRef.current = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [isPlaying, currentTrack]);
+
+  // Copy 1-Click Cue Sheet for Music Supervisors & Video Editors
+  const handleCopyCueSheet = (track: Track) => {
+    const cueSheetText = `=== GIVE IT ALL RECORDS // SYNC CUE SHEET ===
+TRACK TITLE: ${track.title}
+CATALOG ID: ${track.catalogId}
+COMPOSER & PRODUCER: Luciano Lupini (100%)
+PUBLISHER: Luciano Lupini / Give It All Records (100%)
+RIGHTS STATUS: 100% Direct Master & Publishing Owned
+AUDIO FORMAT: 24-Bit / 48kHz Uncompressed PCM WAV
+TEMPO & KEY: ${track.bpm ? `${track.bpm} BPM // ${track.key}` : 'Free Tempo / Unquantized Master'}
+MULTI-TRACK STEMS: ${track.hasStems ? 'Available ($25)' : 'Master Only ($10)'}
+SYNC CLEARANCE: Worldwide perpetual non-exclusive sync (Film, TV, Games, Streaming, Web)
+COMMERCIAL CEILING: Up to $2,000 gross revenue / 100,000 streams included in $10 tier
+BROADCAST CUE REQUIREMENT: Credit 100% Luciano Lupini on TV/Theatrical cue sheets
+CONTACT & UPGRADES: contact@giveitallrecords.com
+=============================================`;
+
+    navigator.clipboard.writeText(cueSheetText).then(() => {
+      setCopiedCueId(track.id);
+      setTimeout(() => setCopiedCueId(null), 2500);
+    });
+  };
+
+  // Copy Full Official Certificate Text
+  const handleCopyCertificate = (track: Track) => {
+    const certText = `========================================================================
+GIVE IT ALL RECORDS // INDEPENDENT SOUND LAB
+OFFICIAL SYNCHRONIZATION & MASTER CLEARANCE CERTIFICATE
+========================================================================
+CERTIFICATE ID: GIAR-SYNC-${track.catalogId}-2026
+ISSUED: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+ORIGIN: Caracas, Venezuela // Give It All Records
+
+MASTER RECORDING SPECIFICATIONS:
+  Track Title:     "${track.title}"
+  Catalog ID:      ${track.catalogId}
+  Composer/Owner:  Luciano Lupini
+  Format:          24-Bit / 48kHz Uncompressed WAV
+  Tempo & Key:     ${track.bpm ? `${track.bpm} BPM // ${track.key}` : 'Unquantized / Experimental'}
+  Stems:           ${track.hasStems ? 'Full Multitrack Stems Pack' : 'Stereo Master'}
+
+CHAIN OF TITLE & WARRANTY (100% DIRECT RIGHTS):
+  1. Master Rights: 100% produced, mixed, and owned by Luciano Lupini.
+  2. Publishing Rights: 100% composed and controlled by Luciano Lupini. Zero co-writers.
+  3. Sample Clearance: 100% original instrumentation. ZERO uncleared third-party samples.
+  4. Non-Exclusive License: Perpetual worldwide sync for video, film, games, and streaming.
+  5. Commercial Threshold: Valid for indie projects generating up to $2,000 in gross revenue
+     or 100,000 streams. Commercial broadcast/major buyout upgrades: contact@giveitallrecords.com
+
+AUTHENTICATION:
+  Luciano Lupini — Composer, Producer, & Master Rights Holder
+========================================================================`;
+
+    navigator.clipboard.writeText(certText).then(() => {
+      setCertificateCopied(true);
+      setTimeout(() => setCertificateCopied(false), 2500);
+    });
+  };
+
+  // Mailing list submit
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput || !emailInput.includes('@')) return;
+    try {
+      localStorage.setItem('giar_subscribed', 'true');
+      localStorage.setItem('giar_email', emailInput);
+    } catch {
+      // storage safe
+    }
+    setIsSubscribed(true);
+  };
+
+  // Project Bundle Calculation
+  const calculateBundlePrice = (count: number) => {
+    if (count <= 0) return { total: 0, original: 0, savings: 0, label: '' };
+    if (count === 1) return { total: 10, original: 10, savings: 0, label: 'SINGLE MASTER' };
+    if (count === 2) return { total: 20, original: 20, savings: 0, label: '2 MASTERS' };
+    if (count === 3) return { total: 25, original: 30, savings: 5, label: '3-MASTER PROJECT CRATE' };
+    if (count === 4) return { total: 35, original: 40, savings: 5, label: '4-MASTER PROJECT CRATE' };
+    if (count >= 5 && count < 8) return { total: 40, original: count * 10, savings: (count * 10) - 40, label: '5-MASTER EP CRATE' };
+    return { total: 60, original: count * 10, savings: (count * 10) - 60, label: '8-MASTER SOUNDTRACK CRATE' };
+  };
+
+  // Filtering Logic
+  const filteredCatalog = CATALOG.filter((track) => {
+    // Crate-only toggle
+    if (showCrateOnly && !favorites.includes(track.id)) {
+      return false;
+    }
+
+    // Mood Filter
+    if (selectedMood !== 'ALL' && track.moodPrimary !== selectedMood) {
+      return false;
+    }
+
+    // Genre Filter
+    if (selectedGenre !== 'ALL') {
+      if (selectedGenre === 'ELECTRONIC / IDM' && track.genre !== 'Electronic') return false;
+      if (selectedGenre === 'HIP-HOP / BOOM BAP' && track.genre !== 'Hip-Hop') return false;
+      if (selectedGenre === 'ALT ROCK / NOISE' && track.genre !== 'Alt Rock / Noise') return false;
+      if (selectedGenre === 'EXPERIMENTAL' && track.genre !== 'Experimental') return false;
+    }
+
+    // Search Query
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase().trim();
+      const corpus = [
+        track.title.toLowerCase(),
+        track.catalogId.toLowerCase(),
+        track.genre.toLowerCase(),
+        track.subgenre.toLowerCase(),
+        track.moodPrimary.toLowerCase(),
+        ...track.moodTags.map((m) => m.toLowerCase()),
+        track.bpm ? track.bpm.toString() : 'experimental unquantized',
+        track.key ? track.key.toLowerCase() : '',
+        track.description.toLowerCase()
+      ].join(' ');
+      if (!corpus.includes(q)) return false;
+    }
+
+    return true;
+  });
+
+  // Track playlist navigation for Continuous Audition Mode
+  const handleNextTrack = () => {
+    const list = filteredCatalog.length > 0 ? filteredCatalog : CATALOG;
+    if (list.length === 0) return;
+    const currentIndex = currentTrack ? list.findIndex((t) => t.id === currentTrack.id) : -1;
+    const nextIndex = currentIndex >= 0 && currentIndex < list.length - 1 ? currentIndex + 1 : 0;
+    const next = list[nextIndex];
+    if (next) {
+      handlePlayTrack(next);
+    }
+  };
+
+  const handlePrevTrack = () => {
+    const list = filteredCatalog.length > 0 ? filteredCatalog : CATALOG;
+    if (list.length === 0) return;
+    const currentIndex = currentTrack ? list.findIndex((t) => t.id === currentTrack.id) : -1;
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : list.length - 1;
+    const prev = list[prevIndex];
+    if (prev) {
+      handlePlayTrack(prev);
+    }
+  };
+
+  useEffect(() => {
+    nextTrackRef.current = handleNextTrack;
+  });
+
+  const formatSeconds = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const shortlistPricing = calculateBundlePrice(favorites.length);
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-[#f0f0f0] relative flex flex-col justify-between selection:bg-white selection:text-black">
+      <div className="fixed inset-0 scanline-overlay z-10 pointer-events-none" />
+
+      {/* Main Container */}
+      <div className="relative z-20 max-w-[1360px] w-full mx-auto p-3 sm:p-5 md:p-6 pb-28">
+        
+        {/* ================================================================================== */}
+        {/* HEADER / NAVIGATION (CLEAN, NATURAL, PROFESSIONAL TERMINOLOGY)                      */}
+        {/* ================================================================================== */}
+        <header className="border-2 border-white p-3 md:p-4 mb-3 bg-black flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 bg-white inline-block animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <h1 className="text-lg md:text-xl font-bold tracking-widest uppercase m-0">
+                GIVE IT ALL RECORDS
+              </h1>
+              <span className="text-[10px] bg-white text-black font-mono font-bold px-1.5 py-0.2 tracking-wider">
+                REV: C.001
+              </span>
+            </div>
+            <p className="text-[11px] text-[#888888] tracking-wider mt-0.5 uppercase flex flex-wrap items-center gap-1.5 font-mono">
+              <span className="text-white">INDEPENDENT AUDIO STORE &amp; MASTER CATALOG</span>
+              <span>//</span>
+              <span>CARACAS, VENEZUELA</span>
+              <span>//</span>
+              <span className="text-white font-bold">[100% INDEPENDENT · DIRECT CLEARANCE]</span>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <button
+              onClick={toggleFont}
+              className="border border-[#444444] px-2.5 py-1 text-[#aaaaaa] hover:text-white hover:border-white transition-all uppercase flex items-center gap-1.5"
+              title="Toggle between Space Mono and VT323 font"
+            >
+              <Sparkles className="w-3 h-3 text-white" />
+              <span>FONT: {fontMode === 'space-mono' ? 'SPACE MONO' : 'VT323 (RETRO)'}</span>
+            </button>
+
+            <nav className="flex items-center gap-1">
+              <button
+                onClick={() => setActiveTab('store')}
+                className={`px-3 py-1 border text-xs uppercase transition-all ${
+                  activeTab === 'store'
+                    ? 'border-white bg-white text-black font-bold phosphor-active'
+                    : 'border-[#222222] text-[#888888] hover:border-[#666666] hover:text-white'
+                }`}
+              >
+                01. CATALOG STORE
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('licensing');
+                  setIsLicensingExpanded(true);
+                  const el = document.getElementById('licensing-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`px-3 py-1 border text-xs uppercase transition-all ${
+                  activeTab === 'licensing'
+                    ? 'border-white bg-white text-black font-bold phosphor-active'
+                    : 'border-[#222222] text-[#888888] hover:border-[#666666] hover:text-white'
+                }`}
+              >
+                02. PERPETUAL LICENSING
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('about');
+                  const el = document.getElementById('about-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`px-3 py-1 border text-xs uppercase transition-all ${
+                  activeTab === 'about'
+                    ? 'border-white bg-white text-black font-bold phosphor-active'
+                    : 'border-[#222222] text-[#888888] hover:border-[#666666] hover:text-white'
+                }`}
+              >
+                03. ABOUT THE LAB
+              </button>
+
+              {/* 04. Dedicated MY CRATE navigation button (always accessible on top) */}
+              <button
+                type="button"
+                onClick={() => setIsCrateOpen(true)}
+                className={`px-3 py-1 border text-xs uppercase transition-all flex items-center gap-1.5 font-bold ${
+                  favorites.length > 0
+                    ? 'border-white bg-[#141414] text-white shadow-[0_0_12px_rgba(255,255,255,0.25)] hover:bg-white hover:text-black'
+                    : 'border-[#333333] text-[#888888] hover:border-white hover:text-white'
+                }`}
+                title="View your Project Crate"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>04. MY CRATE ({favorites.length})</span>
+                {favorites.length > 0 && (
+                  <span className="bg-white text-black px-1.5 py-0 text-[10px] font-black">
+                    ${shortlistPricing.total}
+                  </span>
+                )}
+              </button>
+            </nav>
+          </div>
+        </header>
+
+        {/* ================================================================================== */}
+        {/* 1. LIVE AUDIO MONITOR (CLEAN HARDWARE CHARACTER // NO SCI-FI ROLEPLAY JARGON)      */}
+        {/* ================================================================================== */}
+        <section id="main-audio-monitor" className="border border-white bg-black p-2.5 md:p-3 mb-3 shadow-[0_4px_16px_rgba(0,0,0,0.8)] font-mono">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-[#222222] pb-2 mb-2 text-xs">
+            {/* Monitor Title & Signal Indicator */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`w-2.5 h-2.5 rounded-full ${isPlaying ? 'bg-white shadow-[0_0_8px_#ffffff] animate-pulse' : 'bg-[#444444]'}`} />
+              <span className="font-bold text-white uppercase tracking-wider">
+                LIVE AUDIO MONITOR
+              </span>
+              <span className="text-[10px] text-[#666666] hidden sm:inline">
+                | 24-BIT / 48KHZ WAV AUDITION
+              </span>
+              <span className={`text-[10px] px-1.5 py-0.5 border uppercase font-bold ${
+                isPlaying && currentTrack
+                  ? 'border-white text-black bg-white'
+                  : 'border-[#333333] text-[#aaaaaa] bg-[#0c0c0c]'
+              }`}>
+                {isPlaying && currentTrack ? `LIVE: ${currentTrack.catalogId}` : 'IDLE / READY'}
+              </span>
+              <span
+                className="text-[10px] px-1.5 py-0.5 border border-[#333333] bg-[#0c0c0c] text-white uppercase font-bold"
+                title="Web Audio API transient scanner auto-detected BPM"
+              >
+                {isScanningBpm ? 'SCANNING BPM...' : isTransientLocked ? `AUTO-BPM: ${detectedBpm}` : `FREE TEMPO (${detectedBpm} GRID)`}
+              </span>
+            </div>
+
+            {/* Top Transport Controls: PREV, PLAY, NEXT, STOP, 2/4/8 BAR LOOPS, READOUT, AUTO-ADVANCE */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              {/* PREVIOUS TRACK */}
+              <button
+                type="button"
+                onClick={handlePrevTrack}
+                className="w-7 h-7 border border-[#444444] bg-[#121212] text-[#cccccc] hover:border-white hover:text-white flex items-center justify-center transition-colors"
+                title="Previous track"
+                aria-label="Previous track"
+              >
+                <SkipBack className="w-3.5 h-3.5 fill-current" />
+              </button>
+
+              {/* PLAY / PAUSE BUTTON */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentTrack) {
+                    handlePlayTrack(currentTrack);
+                  } else if (CATALOG.length > 0) {
+                    handlePlayTrack(CATALOG[0]);
+                  }
+                }}
+                className={`px-3 py-1 border text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  isPlaying
+                    ? 'border-white bg-white text-black shadow-[0_0_12px_rgba(255,255,255,0.4)]'
+                    : 'border-white bg-white text-black hover:bg-[#dddddd]'
+                }`}
+                title={isPlaying ? "Pause audio monitor [Space]" : "Play live audio monitor [Space]"}
+              >
+                {isPlaying ? (
+                  <>
+                    <Pause className="w-3.5 h-3.5 fill-current" />
+                    <span>PAUSE</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>PLAY</span>
+                  </>
+                )}
+              </button>
+
+              {/* NEXT TRACK */}
+              <button
+                type="button"
+                onClick={handleNextTrack}
+                className="w-7 h-7 border border-[#444444] bg-[#121212] text-[#cccccc] hover:border-white hover:text-white flex items-center justify-center transition-colors"
+                title="Next track (Continuous Audition)"
+                aria-label="Next track"
+              >
+                <SkipForward className="w-3.5 h-3.5 fill-current" />
+              </button>
+
+              {/* STOP BUTTON */}
+              <button
+                type="button"
+                onClick={handleStopTrack}
+                className="px-2.5 py-1 border border-[#555555] bg-[#121212] text-[#cccccc] hover:border-white hover:text-white hover:bg-[#1e1e1e] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                title="Stop audio playback and reset to 00:00"
+              >
+                <Square className="w-3 h-3 fill-current" />
+                <span>STOP</span>
+              </button>
+
+              {/* 3 BAR-LOOP BUTTONS (2 BARS / 4 BARS / 8 BARS) */}
+              <div className="flex items-center gap-1 border border-[#333333] bg-[#0a0a0a] p-0.5">
+                {([2, 4, 8] as LoopBarOption[]).map((bars) => {
+                  const isLoopActive = loopBars === bars;
+                  return (
+                    <button
+                      key={bars}
+                      type="button"
+                      onClick={() => handleToggleBarLoop(bars)}
+                      className={`px-2 py-0.5 border text-[10px] font-bold uppercase transition-all ${
+                        isLoopActive
+                          ? 'border-white bg-white text-black phosphor-active'
+                          : 'border-[#333333] bg-[#121212] text-[#aaaaaa] hover:border-white hover:text-white'
+                      }`}
+                      title={`Auto-loop ${bars} bars at ${detectedBpm} BPM (click again to release)`}
+                    >
+                      {bars} BARS
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Position & Duration Readout */}
+              <div className="px-2 py-1 border border-[#222222] bg-[#080808] text-[11px] font-mono flex items-center gap-1">
+                <span className={isPlaying ? "text-white font-bold" : "text-white"}>
+                  {formatSeconds(currentTime)}
+                </span>
+                <span className="text-[#444444]">/</span>
+                <span className="text-[#888888]">{currentTrack ? currentTrack.duration : '00:00'}</span>
+              </div>
+
+              {/* Continuous Audition / Auto-Advance Toggle */}
+              <button
+                type="button"
+                onClick={() => setAutoAdvance(!autoAdvance)}
+                className={`px-2 py-1 border text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${
+                  autoAdvance
+                    ? 'border-white bg-[#181818] text-white shadow-[0_0_8px_rgba(255,255,255,0.2)]'
+                    : 'border-[#333333] bg-[#0c0c0c] text-[#777777] hover:border-[#666666] hover:text-white'
+                }`}
+                title="Continuous Audition: Automatically transition to next track upon finish"
+              >
+                <Repeat className="w-3 h-3" />
+                <span className="hidden sm:inline">AUTO-ADVANCE:</span>
+                <span>{autoAdvance ? 'ON' : 'OFF'}</span>
+              </button>
+
+              {/* Spacebar hotkey hint */}
+              <span className="text-[10px] text-[#666666] hidden xl:inline ml-1">
+                [SPACE]
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center">
+            {/* Left: Monochrome Oscilloscope */}
+            <div className="lg:col-span-7 relative border border-[#222222] bg-[#070707] overflow-hidden">
+              <canvas ref={canvasRef} className="w-full h-12 md:h-14 block" />
+              <div className="absolute top-1 left-2 text-[9px] text-[#666666] pointer-events-none flex items-center gap-2 flex-wrap">
+                <span>SIGNAL: STEREO MASTER</span>
+                <span>//</span>
+                <span className="text-white">24-BIT / 48KHZ UNCOMPRESSED</span>
+                {loopBars && (
+                  <span className="text-white font-bold">
+                    // [LOOP: {loopBars} BARS · {formatSeconds(loopStartSec)}–{formatSeconds(loopEndSec)}]
+                  </span>
+                )}
+                {isPlaying && currentTrack?.hasStems && activeStemSolo !== 'master' && (
+                  <span className="text-white font-bold animate-pulse">
+                    // [SOLO: {activeStemSolo.toUpperCase()}]
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Right: Clean Metadata Readout */}
+            <div className="lg:col-span-5 bg-[#0a0a0a] border border-[#222222] p-2 flex flex-col justify-between h-full text-xs">
+              <div className="flex justify-between items-start text-[10px] text-[#888888] mb-0.5">
+                <span className="uppercase text-[#aaaaaa]">
+                  {currentTrack ? `CURRENT TRACK: ${currentTrack.catalogId}` : 'STORE ARCHIVE'}
+                </span>
+                <span className="text-white font-bold">
+                  {currentTrack ? (currentTrack.bpm ? `${currentTrack.bpm} BPM // ${currentTrack.key}` : 'FREE TEMPO // EXPERIMENTAL') : 'MASTER $10 · STEMS $25'}
+                </span>
+              </div>
+
+              <div className="text-sm font-bold text-white uppercase tracking-wider truncate">
+                {currentTrack ? currentTrack.title : 'EXPLORE RELEASES BELOW'}
+              </div>
+
+              <div className="flex justify-between items-center text-[10px] text-[#666666] border-t border-[#1a1a1a] pt-1 mt-1">
+                <span>100% OWNED BY LUCIANO LUPINI</span>
+                <span className="text-white">{currentTrack ? currentTrack.genre : 'ALL GENRES'}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================================================================================== */}
+        {/* 2. MOOD-FIRST FILTERING & COMPACT SEARCH BAR                                       */}
+        {/* ================================================================================== */}
+        <section className="border border-white bg-black p-3 mb-3 font-mono">
+          {/* Top Row: Search Input + Shortlist Counter */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-2 border-b border-[#222222]">
+            <div className="flex items-center gap-2 flex-1">
+              <Search className="w-3.5 h-3.5 text-white flex-shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="SEARCH BY TITLE, MOOD, GENRE, OR BPM (E.G. 'TENSION', 'BOOM BAP', '128', 'DARK')..."
+                className="w-full bg-transparent border-none outline-none text-white text-xs tracking-wider uppercase placeholder:text-[#555555]"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="text-[10px] text-[#888888] hover:text-white px-2 py-0.5 border border-[#444444] uppercase whitespace-nowrap"
+                >
+                  CLEAR
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-center flex-wrap">
+              {/* Filter Crate Only Toggle */}
+              {favorites.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowCrateOnly(!showCrateOnly)}
+                  className={`text-xs px-2.5 py-1 border uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                    showCrateOnly
+                      ? 'border-white bg-white text-black font-bold shadow-[0_0_10px_rgba(255,255,255,0.3)]'
+                      : 'border-[#444444] text-[#cccccc] hover:border-white hover:text-white bg-[#0e0e0e]'
+                  }`}
+                  title={showCrateOnly ? "Click to view all tracks again" : "Filter catalog list to show only your crate tracks"}
+                >
+                  <Bookmark className="w-3 h-3 fill-current" />
+                  <span>{showCrateOnly ? '★ SHOWING CRATE ONLY' : `FILTER: CRATE (${favorites.length})`}</span>
+                </button>
+              )}
+
+              {/* Direct Open Crate Button */}
+              <button
+                type="button"
+                onClick={() => setIsCrateOpen(true)}
+                className={`text-xs px-3 py-1 border uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  favorites.length >= 3
+                    ? 'border-white text-white bg-[#141414] font-bold shadow-[0_0_12px_rgba(255,255,255,0.25)] hover:bg-white hover:text-black'
+                    : favorites.length > 0
+                    ? 'border-white text-white bg-[#141414] font-bold hover:bg-white hover:text-black'
+                    : 'border-[#333333] text-[#777777] bg-[#0a0a0a] hover:border-white hover:text-white'
+                }`}
+                title="Open your project crate to view songs and acquire bundle"
+              >
+                <ShoppingBag className="w-3.5 h-3.5 fill-current" />
+                <span>
+                  {favorites.length === 0 && 'MY CRATE (0)'}
+                  {favorites.length === 1 && 'MY CRATE (1) · $10 ↗'}
+                  {favorites.length === 2 && 'MY CRATE (2) · $20 ↗'}
+                  {favorites.length === 3 && 'MY CRATE (3) · $25 BUNDLE (SAVED $5) ↗'}
+                  {favorites.length === 4 && 'MY CRATE (4) · $35 (ADD 1 FOR $40 PACK) ↗'}
+                  {favorites.length >= 5 && `MY CRATE (${favorites.length}) · $${shortlistPricing.total} PACK (SAVED $${shortlistPricing.savings}) ↗`}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Primary Row: MOOD-FIRST Organization (The Core User Request) */}
+          <div className="pt-2 flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-[#1c1c1c] pb-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] text-[#888888] uppercase font-bold flex items-center gap-1 mr-1">
+                <SlidersHorizontal className="w-3 h-3 text-white" />
+                <span>VIBE &amp; MOOD:</span>
+              </span>
+              {(['ALL', 'TENSION & DARK', 'DRIVING & ENERGETIC', 'SPARSE & AMBIENT', 'BOUNCY & GROOVE', 'RAW & AGGRESSIVE'] as MoodCategory[]).map((mood) => {
+                const isActive = selectedMood === mood;
+                return (
+                  <button
+                    key={mood}
+                    onClick={() => setSelectedMood(mood)}
+                    className={`text-xs px-2.5 py-1 border uppercase tracking-wider transition-all ${
+                      isActive
+                        ? 'border-white bg-white text-black font-bold phosphor-active'
+                        : 'border-[#2d2d2d] text-[#aaaaaa] hover:border-white hover:text-white bg-[#0a0a0a]'
+                    }`}
+                  >
+                    {mood === 'ALL' ? 'ALL MOODS' : mood}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Secondary Row: Clean Genre Switcher */}
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] text-[#666666] uppercase mr-1">GENRE:</span>
+              {(['ALL', 'ELECTRONIC / IDM', 'HIP-HOP / BOOM BAP', 'ALT ROCK / NOISE', 'EXPERIMENTAL'] as GenreFilter[]).map((genre) => (
+                <button
+                  key={genre}
+                  onClick={() => setSelectedGenre(genre)}
+                  className={`text-[10px] px-2 py-0.5 border uppercase transition-colors ${
+                    selectedGenre === genre
+                      ? 'border-white bg-white text-black font-bold'
+                      : 'border-[#222222] text-[#888888] hover:border-[#555555] hover:text-white bg-[#080808]'
+                  }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
+
+            <div className="text-[10px] text-[#777777]">
+              {filteredCatalog.length} OF {CATALOG.length} RELEASES AVAILABLE &bull; MASTER $10 / STEMS $25
+            </div>
+          </div>
+        </section>
+
+        {/* Project Crate Callout Banner (when items are placed in crate) */}
+        {favorites.length > 0 && (
+          <div className="border border-white bg-[#0c0c0c] p-3 mb-3 font-mono flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5 shadow-[0_0_15px_rgba(255,255,255,0.12)]">
+            <div className="text-xs">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-white font-bold uppercase flex items-center gap-1">
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>★ {favorites.length} TRACKS IN YOUR PROJECT CRATE:</span>
+                </span>
+                <span className="text-white font-bold">
+                  {shortlistPricing.label} &bull; Total: ${shortlistPricing.total}.00 USD
+                </span>
+                {shortlistPricing.savings > 0 && (
+                  <span className="text-white font-bold bg-[#1a1a1a] px-1.5 py-0.5 border border-[#444444]">
+                    SAVED ${shortlistPricing.savings}.00 BUNDLE DISCOUNT
+                  </span>
+                )}
+              </div>
+              <div className="text-[10px] text-[#888888] mt-0.5">
+                Tracks: {CATALOG.filter((t) => favorites.includes(t.id)).map((t) => t.catalogId).join(', ')}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Direct View Crate Modal Button */}
+              <button
+                type="button"
+                onClick={() => setIsCrateOpen(true)}
+                className="border border-white bg-white text-black font-bold text-xs uppercase px-3 py-1 hover:bg-[#dddddd] transition-all flex items-center gap-1.5"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>VIEW CRATE ↗</span>
+              </button>
+
+              {/* Show Crate Only Filter Toggle */}
+              <button
+                type="button"
+                onClick={() => setShowCrateOnly(!showCrateOnly)}
+                className={`text-xs px-2.5 py-1 border uppercase transition-colors ${
+                  showCrateOnly 
+                    ? 'border-white bg-white text-black font-bold' 
+                    : 'border-[#333333] text-[#cccccc] hover:border-white hover:text-white bg-black'
+                }`}
+              >
+                {showCrateOnly ? 'SHOW ALL CATALOG' : 'FILTER TABLE TO CRATE'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFavorites([])}
+                className="text-[10px] text-[#888888] hover:text-white border border-[#333333] hover:border-white px-2 py-1 uppercase"
+                title="Clear all tracks from crate"
+              >
+                CLEAR
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================================== */}
+        {/* 3. HIGH-DENSITY MASTER RELEASES (COMPACT SINGLE-LINE ROWS // ZERO BLOAT)           */}
+        {/* ================================================================================== */}
+        <section className="mb-5 font-mono">
+          <div className="border-b-2 border-white pb-1.5 mb-2.5 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
+            <div>
+              <span className="text-[10px] text-[#888888] uppercase tracking-widest block">
+                MASTER RELEASES
+              </span>
+              <h2 className="text-base font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <span>CATALOG DISPATCH</span>
+                <span className="text-xs text-white font-normal border border-white px-1.5 py-0.2">
+                  NON-EXCLUSIVE SYNC LICENSE
+                </span>
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-[#888888] hidden md:inline mr-1">
+                CLICK WAVEFORM TO SCRUB OR JUMP TO DROP
+              </span>
+              <button
+                type="button"
+                onClick={handleFoldAllTracks}
+                className={`text-[10px] px-2 py-0.5 border uppercase font-bold transition-colors ${
+                  unfoldedTrackIds.length === 0
+                    ? 'border-white bg-white text-black'
+                    : 'border-[#333333] bg-[#0c0c0c] text-[#888888] hover:border-white hover:text-white'
+                }`}
+                title="Fold all songs in Catalog Dispatch into single-line rows"
+              >
+                [ − FOLD ALL ]
+              </button>
+              <button
+                type="button"
+                onClick={handleUnfoldAllTracks}
+                className={`text-[10px] px-2 py-0.5 border uppercase font-bold transition-colors ${
+                  unfoldedTrackIds.length === CATALOG.length
+                    ? 'border-white bg-white text-black'
+                    : 'border-[#333333] bg-[#0c0c0c] text-[#888888] hover:border-white hover:text-white'
+                }`}
+                title="Unfold all songs in Catalog Dispatch"
+              >
+                [ + UNFOLD ALL ]
+              </button>
+            </div>
+          </div>
+
+          {filteredCatalog.length === 0 ? (
+            <div className="border border-[#222222] p-8 text-center bg-[#0a0a0a]">
+              <p className="text-sm text-[#888888] mb-2 uppercase tracking-wider">
+                NO RELEASES FOUND FOR SELECTED FILTERS
+              </p>
+              <button
+                onClick={() => {
+                  setSelectedMood('ALL');
+                  setSelectedGenre('ALL');
+                  setSearchQuery('');
+                }}
+                className="border border-white bg-white text-black text-xs font-bold px-3 py-1 uppercase hover:bg-[#dddddd]"
+              >
+                RESET FILTERS
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              {filteredCatalog.map((track) => {
+                const isCurrentlyPlaying = currentTrack?.id === track.id && isPlaying;
+                const isCurrentActive = currentTrack?.id === track.id;
+                const isFav = favorites.includes(track.id);
+                const hasCopiedThis = copiedCueId === track.id;
+                const isExpanded = expandedTrackId === track.id;
+                const isRowUnfolded = unfoldedTrackIds.includes(track.id);
+                const peakSilhouette = getTrackPeakSilhouette(track, 32);
+                const currentRatio = isCurrentActive ? currentTime / track.durationSec : 0;
+                const activeBarIndex = Math.floor(currentRatio * peakSilhouette.length);
+                const dropBarIndex = Math.floor((track.dropTimestampSec / track.durationSec) * peakSilhouette.length);
+                const loopStartBarIdx = isCurrentActive && loopBars ? Math.floor((loopStartSec / track.durationSec) * peakSilhouette.length) : -1;
+                const loopEndBarIdx = isCurrentActive && loopBars ? Math.ceil((loopEndSec / track.durationSec) * peakSilhouette.length) : -1;
+
+                return (
+                  <div
+                    key={track.id}
+                    className={`border transition-all bg-black ${
+                      isCurrentActive
+                        ? 'border-white bg-[#0c0c0c] shadow-[0_0_12px_rgba(255,255,255,0.18)]'
+                        : 'border-[#222222] hover:border-[#555555]'
+                    }`}
+                  >
+                    {!isRowUnfolded ? (
+                      /* FOLDED SINGLE-LINE ROW */
+                      <div className="px-2.5 py-1.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => handlePlayTrack(track)}
+                            className={`w-6 h-6 border transition-all text-xs flex items-center justify-center flex-shrink-0 ${
+                              isCurrentlyPlaying
+                                ? 'border-white bg-white text-black phosphor-active'
+                                : 'border-white text-white hover:bg-white hover:text-black bg-black'
+                            }`}
+                            aria-label={isCurrentlyPlaying ? 'Pause preview' : 'Play preview'}
+                          >
+                            {isCurrentlyPlaying ? (
+                              <Pause className="w-3 h-3 fill-current" />
+                            ) : (
+                              <Play className="w-3 h-3 fill-current" />
+                            )}
+                          </button>
+
+                          <span className="text-[10px] text-[#666666] font-bold flex-shrink-0">
+                            {track.catalogId}
+                          </span>
+
+                          <span className="text-xs font-bold text-white uppercase tracking-wide truncate">
+                            {track.title}
+                          </span>
+
+                          <span className="text-[10px] text-[#cccccc] font-bold hidden md:inline flex-shrink-0">
+                            [{track.moodPrimary}]
+                          </span>
+
+                          <span className="text-[10px] text-[#888888] hidden lg:inline flex-shrink-0">
+                            &bull; {track.genre} &bull; {track.bpm ? `${track.bpm} BPM · ${track.key}` : 'FREE TEMPO'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap justify-end flex-shrink-0">
+                          <span className="text-[10px] text-[#888888] font-mono mr-1">
+                            {isCurrentActive ? formatSeconds(currentTime) : track.duration}
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => handleJumpToTime(track, track.dropTimestampSec)}
+                            className="text-[9px] text-white hover:text-black hover:bg-white border border-[#444444] bg-[#121212] px-1.5 py-0.5 font-bold uppercase transition-colors whitespace-nowrap"
+                            title={`Jump to drop at ${formatSeconds(track.dropTimestampSec)}`}
+                          >
+                            DROP ⚡
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => toggleTrackFold(track.id)}
+                            className="text-[10px] px-2 py-0.5 border border-[#444444] text-[#cccccc] hover:border-white hover:text-white bg-[#0c0c0c] uppercase flex items-center gap-1"
+                            title="Unfold track row"
+                          >
+                            <ChevronDown className="w-3 h-3" />
+                            <span>UNFOLD</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => toggleFavorite(track.id)}
+                            className={`text-[10px] px-2 py-0.5 border transition-all uppercase flex items-center gap-1 whitespace-nowrap ${
+                              isFav
+                                ? 'border-white bg-white text-black font-bold'
+                                : 'border-[#333333] text-[#aaaaaa] hover:border-white hover:text-white bg-black'
+                            }`}
+                            title={isFav ? 'Click to remove from crate' : 'Add to your project crate'}
+                          >
+                            {isFav ? (
+                              <>
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                <span>IN CRATE</span>
+                              </>
+                            ) : (
+                              <span>+ CRATE</span>
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setModalTrack(track);
+                              setModalTier('master');
+                            }}
+                            className="border border-white bg-white text-black font-bold text-[10px] uppercase px-2 py-0.5 hover:bg-black hover:text-white transition-all whitespace-nowrap"
+                          >
+                            $10
+                          </button>
+
+                          {track.hasStems && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setModalTrack(track);
+                                setModalTier('stems');
+                              }}
+                              className="border border-[#555555] bg-[#141414] text-white hover:bg-white hover:text-black font-bold text-[10px] uppercase px-2 py-0.5 transition-all whitespace-nowrap"
+                              title="Acquire separated multi-track stems + stereo master ($25)"
+                            >
+                              $25
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      /* UNFOLDED TRACK ROW (EXACT B_006 LAYOUT) */
+                      <>
+                        <div className="p-2 sm:px-3 sm:py-2 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+                          {/* Left: Play Button + Identity + Mood Tags */}
+                          <div className="flex items-center gap-2.5 min-w-[300px] flex-1">
+                            <button
+                              type="button"
+                              onClick={() => handlePlayTrack(track)}
+                              className={`w-8 h-8 border transition-all text-xs flex items-center justify-center flex-shrink-0 ${
+                                isCurrentlyPlaying
+                                  ? 'border-white bg-white text-black phosphor-active'
+                                  : 'border-white text-white hover:bg-white hover:text-black bg-black'
+                              }`}
+                              aria-label={isCurrentlyPlaying ? 'Pause preview' : 'Play preview'}
+                            >
+                              {isCurrentlyPlaying ? (
+                                <Pause className="w-3.5 h-3.5 fill-current" />
+                              ) : (
+                                <Play className="w-3.5 h-3.5 fill-current" />
+                              )}
+                            </button>
+
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-[10px] text-[#666666] font-bold">
+                                  {track.catalogId}
+                                </span>
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wide truncate">
+                                  {track.title}
+                                </h3>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 text-[10px] text-[#888888] flex-wrap mt-0.5">
+                                <span className="text-white font-bold">
+                                  [{track.moodPrimary}]
+                                </span>
+                                <span>&bull;</span>
+                                <span className="text-[#cccccc]">
+                                  {track.genre}
+                                </span>
+                                <span>&bull;</span>
+                                <span className="text-[#aaaaaa]">
+                                  {track.bpm ? `${track.bpm} BPM · ${track.key}` : 'FREE TEMPO (UNQUANTIZED)'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Middle: Stepped Waveform Bar + Audio Timer + Instant Drop Jump */}
+                          <div className="w-full lg:w-[320px] flex items-center gap-2 flex-shrink-0 bg-[#070707] border border-[#1a1a1a] px-2 py-1">
+                            <span className="text-[9px] text-[#888888] w-9 text-right font-mono">
+                              {isCurrentActive ? formatSeconds(currentTime) : '00:00'}
+                            </span>
+
+                            {/* Interactive Clickable Waveform */}
+                            <div 
+                              className="flex items-end gap-[1.5px] h-6 flex-1 bg-black p-0.5 cursor-pointer group"
+                              title="Click anywhere to scrub or jump"
+                              onClick={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const clickX = e.clientX - rect.left;
+                                const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+                                handleJumpToTime(track, Math.floor(ratio * track.durationSec));
+                              }}
+                            >
+                              {peakSilhouette.map((peakHeight, idx) => {
+                                const isPassed = isCurrentActive && idx <= activeBarIndex;
+                                const isDropPoint = idx === dropBarIndex;
+                                const isInLoop = isCurrentActive && loopBars && idx >= loopStartBarIdx && idx <= loopEndBarIdx;
+                                return (
+                                  <div
+                                    key={idx}
+                                    style={{ height: `${Math.round(peakHeight * 100)}%` }}
+                                    className={`flex-1 transition-all duration-75 relative ${
+                                      isInLoop
+                                        ? 'bg-white shadow-[0_0_4px_#ffffff]'
+                                        : isPassed 
+                                        ? 'bg-white' 
+                                        : isDropPoint
+                                        ? 'bg-[#777777]'
+                                        : 'bg-[#222222] group-hover:bg-[#333333]'
+                                    }`}
+                                  />
+                                );
+                              })}
+                            </div>
+
+                            <span className="text-[9px] text-[#888888] w-9 font-mono">
+                              {track.duration}
+                            </span>
+
+                            {/* Instant Drop Jump Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleJumpToTime(track, track.dropTimestampSec)}
+                              className="text-[9px] text-white hover:text-black hover:bg-white border border-[#444444] bg-[#141414] px-1 py-0.5 font-bold uppercase transition-colors whitespace-nowrap"
+                              title={`Jump to drop at ${formatSeconds(track.dropTimestampSec)}`}
+                            >
+                              DROP ⚡
+                            </button>
+                          </div>
+
+                          {/* Right: Fold + Shortlist Pin + Solid $10 Master + $25 Stems Buttons */}
+                          <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap justify-between lg:justify-end flex-shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => toggleTrackFold(track.id)}
+                              className="text-[10px] px-2 py-1 border border-[#333333] text-[#888888] hover:border-white hover:text-white transition-colors uppercase flex items-center gap-1"
+                              title="Fold track row into single line"
+                            >
+                              <ChevronUp className="w-3 h-3" />
+                              <span>FOLD</span>
+                            </button>
+
+                            {/* Info / Cue Expand Toggle */}
+                            <button
+                              type="button"
+                              onClick={() => setExpandedTrackId(isExpanded ? null : track.id)}
+                              className={`text-[10px] px-2 py-1 border transition-colors uppercase flex items-center gap-1 ${
+                                isExpanded ? 'border-white text-white bg-[#1a1a1a]' : 'border-[#333333] text-[#777777] hover:border-[#666666] hover:text-white'
+                              }`}
+                              title="View track details, cue sheet info, and related tracks"
+                            >
+                              <Info className="w-3 h-3" />
+                              <span>{isExpanded ? 'LESS' : 'INFO'}</span>
+                            </button>
+
+                            {/* Crate Toggle Button */}
+                            <button
+                              type="button"
+                              onClick={() => toggleFavorite(track.id)}
+                              className={`text-[10px] px-2.5 py-1 border transition-all uppercase flex items-center gap-1.5 whitespace-nowrap ${
+                                isFav
+                                  ? 'border-white bg-white text-black font-bold shadow-[0_0_8px_rgba(255,255,255,0.25)] hover:bg-[#dddddd]'
+                                  : 'border-[#333333] text-[#aaaaaa] hover:border-white hover:text-white bg-black'
+                              }`}
+                              title={isFav ? 'Click to remove from crate' : 'Add to your project crate'}
+                            >
+                              {isFav ? (
+                                <>
+                                  <Check className="w-3 h-3 stroke-[3]" />
+                                  <span>IN CRATE</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingBag className="w-3 h-3" />
+                                  <span>+ ADD TO CRATE</span>
+                                </>
+                              )}
+                            </button>
+
+                            {/* Solid High-Contrast Master Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setModalTrack(track);
+                                setModalTier('master');
+                              }}
+                              className="border border-white bg-white text-black font-bold text-xs uppercase px-2.5 py-1 hover:bg-black hover:text-white transition-all flex items-center gap-1 whitespace-nowrap phosphor-hover"
+                            >
+                              <span>ACQUIRE MASTER · $10 · PERPETUAL</span>
+                              <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
+                            </button>
+
+                            {/* Stems Button (hidden if track has no stems) */}
+                            {track.hasStems && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setModalTrack(track);
+                                  setModalTier('stems');
+                                }}
+                                className="border border-[#555555] bg-[#141414] text-white hover:bg-white hover:text-black font-bold text-xs uppercase px-2 py-1 transition-all flex items-center gap-1 whitespace-nowrap"
+                                title="Acquire separated multi-track stems + stereo master ($25)"
+                              >
+                                <span>STEMS · $25</span>
+                                <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* EXPANDABLE DETAILS TRAY (Only opens when user clicks INFO) */}
+                        {isExpanded && (
+                          <div className="border-t border-[#1a1a1a] bg-[#070707] p-2.5 text-xs text-[#888888] space-y-2">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                              <p className="text-white text-[11px] leading-relaxed max-w-2xl">
+                                {track.description}
+                              </p>
+                              
+                              <div className="flex items-center gap-2">
+                                {/* 1-Click Cue Sheet Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyCueSheet(track)}
+                                  className={`text-[10px] px-2 py-0.5 border transition-all flex items-center gap-1 ${
+                                    hasCopiedThis
+                                      ? 'border-white bg-white text-black font-bold'
+                                      : 'border-[#444444] text-[#cccccc] hover:border-white hover:text-white bg-black'
+                                  }`}
+                                  title="Copy broadcast sync cue sheet metadata"
+                                >
+                                  <Copy className="w-2.5 h-2.5" />
+                                  <span>{hasCopiedThis ? '✓ CUE SHEET COPIED' : '📋 CUE SHEET'}</span>
+                                </button>
+
+                                {/* 1-Click Certificate */}
+                                <button
+                                  type="button"
+                                  onClick={() => setCertificateTrack(track)}
+                                  className="text-[10px] px-2 py-0.5 border border-[#444444] bg-[#121212] text-white hover:border-white hover:bg-white hover:text-black font-bold transition-all flex items-center gap-1"
+                                  title="View & export 1-page Synchronization Certificate"
+                                >
+                                  <ShieldCheck className="w-3 h-3" />
+                                  <span>📄 LICENSE CERT</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Stems Solo Audition + Similar Track Link */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-1 border-t border-[#141414] text-[10px]">
+                              {track.hasStems ? (
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[#666666] uppercase font-bold flex items-center gap-1">
+                                    <Layers className="w-3 h-3 text-white" />
+                                    <span>STEM AUDITION:</span>
+                                  </span>
+                                  {(['master', 'drums', 'bass', 'synths'] as StemSoloMode[]).map((mode) => (
+                                    <button
+                                      key={mode}
+                                      type="button"
+                                      onClick={() => {
+                                        if (!isCurrentActive) handlePlayTrack(track);
+                                        handleStemSoloSwitch(mode);
+                                      }}
+                                      className={`px-1.5 py-0.5 border uppercase ${
+                                        isCurrentActive && activeStemSolo === mode
+                                          ? 'border-white bg-white text-black font-bold'
+                                          : 'border-[#333333] text-[#888888] hover:text-white'
+                                      }`}
+                                    >
+                                      {mode}
+                                    </button>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-[#666666]">STEREO MASTER ONLY</span>
+                              )}
+
+                              {/* Clean Similar Track Link (No sci-fi jargon) */}
+                              <div className="flex items-center gap-1.5 text-[#888888]">
+                                <span>SIMILAR TRACK:</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const comp = CATALOG.find((t) => t.catalogId === track.companionCatalogId);
+                                    if (comp) handlePlayTrack(comp);
+                                  }}
+                                  className="text-white hover:text-[#cccccc] underline font-bold uppercase"
+                                >
+                                  {track.companionCatalogId} &bull; {track.companionTitle} ↗
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ================================================================================== */}
+        {/* 4. MAILING LIST (CLEAN, DIRECT, UTILITARIAN RECORD STORE DISPATCH)                 */}
+        {/* ================================================================================== */}
+        <section className="border border-white bg-[#080808] p-3.5 mb-5 font-mono">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider mb-0.5">
+                <Mail className="w-4 h-4 text-white" />
+                <span>GIVE IT ALL RECORDS // MAILING LIST</span>
+              </div>
+              <p className="text-xs text-[#aaaaaa]">
+                Get notified about new releases, private catalog drops, and bundle discount codes. No spam.
+              </p>
+            </div>
+
+            {isSubscribed ? (
+              <div className="flex items-center gap-2 border border-white bg-[#121212] text-white px-3 py-1.5 text-xs font-bold uppercase">
+                <Check className="w-4 h-4 stroke-[3]" />
+                <span>[✓ SUBSCRIBED // YOU WILL RECEIVE PRIVATE CATALOG DROPS]</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex items-center gap-2 w-full md:w-auto">
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="ENTER YOUR EMAIL..."
+                  required
+                  className="bg-black border border-[#444444] px-3 py-1.5 text-xs text-white uppercase outline-none focus:border-white w-full sm:w-64"
+                />
+                <button
+                  type="submit"
+                  className="border border-white bg-white text-black text-xs font-bold uppercase px-3 py-1.5 hover:bg-black hover:text-white transition-all whitespace-nowrap"
+                >
+                  SUBSCRIBE
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
+
+        {/* ================================================================================== */}
+        {/* 5. PERPETUAL LICENSING & LEGAL TERMS ($2,000 / 100K STREAM CEILING ENFORCEMENT)    */}
+        {/* ================================================================================== */}
+        <section id="licensing-section" className="space-y-3 mb-5 font-mono">
+          <div className="border border-white bg-[#080808] transition-all">
+            {/* Tactile Hardware Accordion Trigger Header */}
+            <button
+              type="button"
+              onClick={() => setIsLicensingExpanded((prev) => !prev)}
+              className="w-full p-3 sm:p-3.5 text-left flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-[#111111] transition-colors cursor-pointer group"
+              aria-expanded={isLicensingExpanded}
+              title="Toggle Perpetual Licensing & $2,000 Revenue Ceiling Specification"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 border border-white bg-black flex items-center justify-center text-white text-xs font-bold group-hover:bg-white group-hover:text-black transition-colors flex-shrink-0">
+                  {isLicensingExpanded ? '−' : '+'}
+                </span>
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="w-4 h-4 fill-current inline-block" />
+                    <span>{isLicensingExpanded ? 'PERPETUAL LICENSING & $2,000 REVENUE CEILING TERMS' : '[ + ] VIEW PERPETUAL LICENSING & $2,000 REVENUE CEILING TERMS'}</span>
+                  </div>
+                  <div className="text-[10px] text-[#aaaaaa] mt-0.5 tracking-wide flex items-center gap-2 flex-wrap">
+                    <span>100% DIRECT RIGHTS</span>
+                    <span>&bull;</span>
+                    <span>NEVER CONTENT-ID FLAGGED</span>
+                    <span>&bull;</span>
+                    <span>PERPETUAL WORLDWIDE SYNC</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-center">
+                <span className="text-[9px] bg-white text-black px-2 py-0.5 font-bold uppercase tracking-wider">
+                  {isLicensingExpanded ? 'COLLAPSE TERMS' : 'CLICK TO EXPAND'}
+                </span>
+                {isLicensingExpanded ? (
+                  <ChevronUp className="w-4 h-4 text-white" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-white group-hover:translate-y-0.5 transition-transform" />
+                )}
+              </div>
+            </button>
+
+            {/* Accordion Content Revealed On Click */}
+            {isLicensingExpanded && (
+              <div className="p-4 pt-2 border-t border-[#222222]">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[#222222] pb-2 mb-3">
+                  <span className="text-[11px] text-white uppercase tracking-wider font-bold">
+                    INDEPENDENT MASTER &amp; PUBLISHING LEGAL CLEARANCE
+                  </span>
+                  <span className="text-[10px] text-[#aaaaaa]">
+                    100% OWNED BY LUCIANO LUPINI &bull; CARACAS, VENEZUELA
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#cccccc] leading-relaxed mb-3">
+                  Every recording is 100% written, performed, and mastered by Luciano Lupini in Caracas. 
+                  Zero uncleared samples, zero co-writer disputes, and zero publishing middleman hurdles.
+                  When you acquire a track, you receive a binding, perpetual non-exclusive sync license.
+                </p>
+
+                {/* 4-Pillar Specification Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs text-[#888888]">
+                  <div className="border border-[#333333] p-2.5 bg-black">
+                    <strong className="text-white block mb-0.5">1. UNCOMPRESSED 24-BIT WAV</strong>
+                    Studio master 24-bit / 48kHz uncompressed audio. Instant download link upon checkout.
+                  </div>
+
+                  <div className="border border-[#333333] p-2.5 bg-black">
+                    <strong className="text-white block mb-0.5">2. PERPETUAL WORLDWIDE SYNC</strong>
+                    Clearance never expires. Valid for YouTube, Twitch, video games, podcasts, and indie cinema.
+                  </div>
+
+                  <div className="border border-[#333333] p-2.5 bg-black">
+                    <strong className="text-white block mb-0.5">3. $2,000 / 100K STREAM CEILING</strong>
+                    Includes rights for projects generating up to $2,000 USD gross or 100,000 streams. Commercial upgrades available.
+                  </div>
+
+                  <div className="border border-[#333333] p-2.5 bg-black">
+                    <strong className="text-white block mb-0.5">4. VOCAL LEASE &amp; STEMS</strong>
+                    Emcees are cleared to record vocals and distribute songs with zero backend splits owed under the threshold.
+                  </div>
+                </div>
+
+                {/* Quick Collapse Trigger inside expanded terms */}
+                <div className="mt-3 pt-2 border-t border-[#222222] flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsLicensingExpanded(false)}
+                    className="text-[10px] text-white hover:text-[#cccccc] uppercase tracking-wider flex items-center gap-1 font-mono hover:underline cursor-pointer"
+                  >
+                    <span>[ − ] TUCK &amp; COLLAPSE LICENSING TERMS</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bespoke Production & Contact Line */}
+          <div id="about-section" className="border border-[#222222] bg-[#0a0a0a] p-3 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div className="text-[#aaaaaa]">
+              NEED EXCLUSIVE THEATRICAL SCORE, BESPOKE SOUND DESIGN, OR HIGH-BUDGET COMMERCIAL BUYOUT?
+            </div>
+            <a
+              href="mailto:contact@giveitallrecords.com?subject=BESPOKE%20PRODUCTION%20/%20EXCLUSIVE%20BUYOUT%20INQUIRY"
+              className="border border-white bg-white text-black px-3 py-1 font-bold uppercase hover:bg-black hover:text-white transition-all whitespace-nowrap"
+            >
+              CONTACT: contact@giveitallrecords.com
+            </a>
+          </div>
+
+          {/* Back to Top Control (Cybernetic Up-Arrow Component) */}
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="w-full border-2 border-white hover:border-white bg-black hover:bg-[#111111] p-3 transition-all duration-200 group cursor-pointer text-center relative overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.85)] hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]"
+              title="Return to top of page (Live Audio Monitor & Store Archive)"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                {/* Left decorative terminal label */}
+                <div className="hidden sm:flex items-center gap-2 text-[10px] text-[#666666] group-hover:text-white font-mono transition-colors">
+                  <span className="w-2 h-2 border border-current inline-block" />
+                  <span>ORIGIN // ELEVATION 00:00</span>
+                </div>
+
+                {/* Center interactive trigger with dual animated arrows */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 border border-white bg-[#0a0a0a] group-hover:bg-white flex items-center justify-center transition-all duration-200 shadow-[0_0_8px_rgba(255,255,255,0.15)]">
+                    <ChevronsUp className="w-5 h-5 text-white group-hover:text-black group-hover:-translate-y-0.5 transition-all duration-200" />
+                  </div>
+
+                  <div className="text-left font-mono">
+                    <div className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white transition-colors flex items-center gap-2">
+                      <span>▲ RETURN TO TOP // LIVE AUDIO MONITOR</span>
+                      <span className="text-[9px] bg-white text-black px-1.5 py-0.2 font-black uppercase tracking-wider transition-colors">
+                        ASCEND
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-[#888888] uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                      <span>MONITOR CONTROLS</span>
+                      <span>&bull;</span>
+                      <span>FULL CATALOG</span>
+                      <span>&bull;</span>
+                      <span className="text-white">CRATE ({favorites.length})</span>
+                    </div>
+                  </div>
+
+                  <div className="w-8 h-8 border border-white bg-[#0a0a0a] group-hover:bg-white flex items-center justify-center transition-all duration-200 shadow-[0_0_8px_rgba(255,255,255,0.15)]">
+                    <ChevronsUp className="w-5 h-5 text-white group-hover:text-black group-hover:-translate-y-0.5 transition-all duration-200" />
+                  </div>
+                </div>
+
+                {/* Right decorative terminal label */}
+                <div className="hidden sm:flex items-center gap-2 text-[10px] text-[#666666] group-hover:text-white font-mono transition-colors">
+                  <span>BUILD REV: C.001</span>
+                  <span className="w-2 h-2 border border-current inline-block" />
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {/* Direct Build Code Download Bar */}
+          <div className="mt-2 flex flex-col sm:flex-row justify-between items-center gap-2 text-[11px] text-[#888888] border border-[#222222] bg-[#080808] p-2">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-white rounded-full" />
+              <span>CURRENT ARCHIVE STAMP: <strong className="text-white">give-it-all-records-__-audio-store_C.001.zip</strong></span>
+            </span>
+            <a
+              href="/give-it-all-records-__-audio-store_C.001.zip"
+              download="give-it-all-records-__-audio-store_C.001.zip"
+              className="border border-[#444444] hover:border-white text-white hover:bg-white hover:text-black px-2.5 py-1 uppercase text-[10px] font-bold transition-all flex items-center gap-1.5 bg-[#0f0f0f]"
+              title="Download full project code package as .zip"
+            >
+              <Download className="w-3 h-3" />
+              <span>DOWNLOAD C.001 CODE (.ZIP)</span>
+            </a>
+          </div>
+        </section>
+
+        {/* ================================================================================== */}
+        {/* FOOTER (CLEAN & DIRECT)                                                            */}
+        {/* ================================================================================== */}
+        <footer className="border-t border-[#222222] pt-3 text-center text-xs text-[#555555] uppercase tracking-wider font-mono">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-1">
+            <div>&copy; 2026 GIVE IT ALL RECORDS. ALL RIGHTS RESERVED.</div>
+            <div className="text-[10px] text-[#aaaaaa]">
+              PRODUCED &amp; MASTERED BY LUCIANO LUPINI // CARACAS, VENEZUELA
+            </div>
+          </div>
+          <p className="text-[10px] text-[#444444]">
+            INDEPENDENT AUDIO CATALOG &bull; 100% DIRECT RIGHTS &bull; ZERO THIRD-PARTY PRO COMMISSIONS
+          </p>
+        </footer>
+      </div>
+
+      {/* ================================================================================== */}
+      {/* PERSISTENT FLOATING MINI-PLAYER BAR (ALWAYS ON // MINIMIZE & EXPAND READY)          */}
+      {/* ================================================================================== */}
+      {(hasStartedPlaying || currentTrack) && currentTrack && (
+        isDockDismissed ? (
+          <aside className="fixed bottom-3 right-3 sm:right-5 z-50 bg-[#070709]/95 backdrop-blur-md border-2 border-white px-3 py-1.5 shadow-[0_0_20px_rgba(0,0,0,0.95)] font-mono flex items-center gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => handlePlayTrack(currentTrack)}
+              className="w-6 h-6 border border-white flex items-center justify-center text-black bg-white hover:bg-[#dddddd] transition-colors flex-shrink-0"
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+              title={isPlaying ? 'Pause [Space]' : 'Play [Space]'}
+            >
+              {isPlaying ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
+            </button>
+            <span className="font-bold text-white uppercase text-[11px] truncate max-w-[180px]">
+              {currentTrack.catalogId}: {currentTrack.title}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsDockDismissed(false)}
+              className="border border-white bg-[#141414] text-white hover:bg-white hover:text-black px-2 py-0.5 text-[10px] font-bold uppercase"
+              title="Expand floating player dock"
+            >
+              [ + EXPAND ]
+            </button>
+          </aside>
+        ) : (
+          <aside className="fixed bottom-0 left-0 right-0 z-50 bg-[#070709]/95 backdrop-blur-md border-t-2 border-white py-1.5 px-3 sm:px-5 shadow-[0_-8px_24px_rgba(0,0,0,0.95)] font-mono transition-transform duration-200">
+            <div className="max-w-[1360px] mx-auto flex items-center justify-between gap-2.5 text-xs">
+              {/* Left: Signal Pulse, Prev / Play / Next / Stop & Track Info */}
+              <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                <span 
+                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    isPlaying 
+                      ? 'bg-white shadow-[0_0_8px_#ffffff] animate-pulse' 
+                      : 'bg-[#444444]'
+                  }`} 
+                  title={isPlaying ? 'Auditioning Live Master Audio' : 'Audition Paused'}
+                />
+
+                {/* Prev Track */}
+                <button
+                  type="button"
+                  onClick={handlePrevTrack}
+                  className="w-6 h-6 border border-[#444444] bg-[#121212] text-[#cccccc] hover:border-white hover:text-white flex items-center justify-center transition-colors flex-shrink-0"
+                  aria-label="Previous track"
+                  title="Previous track"
+                >
+                  <SkipBack className="w-3 h-3 fill-current" />
+                </button>
+
+                {/* Play / Pause Toggle */}
+                <button
+                  type="button"
+                  onClick={() => handlePlayTrack(currentTrack)}
+                  className="w-6 h-6 border border-white flex items-center justify-center text-black bg-white hover:bg-[#dddddd] transition-colors flex-shrink-0"
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                  title={isPlaying ? 'Pause [Space]' : 'Play [Space]'}
+                >
+                  {isPlaying ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
+                </button>
+
+                {/* Next Track */}
+                <button
+                  type="button"
+                  onClick={handleNextTrack}
+                  className="w-6 h-6 border border-[#444444] bg-[#121212] text-[#cccccc] hover:border-white hover:text-white flex items-center justify-center transition-colors flex-shrink-0"
+                  aria-label="Next track"
+                  title="Next track"
+                >
+                  <SkipForward className="w-3 h-3 fill-current" />
+                </button>
+
+                {/* Stop Button */}
+                <button
+                  type="button"
+                  onClick={handleStopTrack}
+                  className="w-6 h-6 border border-[#333333] bg-[#121212] text-[#777777] hover:border-white hover:text-white hover:bg-[#1e1e1e] flex items-center justify-center transition-colors flex-shrink-0"
+                  aria-label="Stop playback"
+                  title="Stop playback"
+                >
+                  <Square className="w-2.5 h-2.5 fill-current" />
+                </button>
+
+                {/* Track Metadata */}
+                <div className="truncate ml-1 flex items-center gap-1.5 min-w-0">
+                  <span className="font-bold text-white uppercase text-[11px] whitespace-nowrap">{currentTrack.catalogId}:</span>
+                  <span className="text-[#dddddd] uppercase text-[11px] truncate max-w-[120px] sm:max-w-[200px] md:max-w-[260px]">{currentTrack.title}</span>
+                  <span className="text-[9px] bg-[#141414] text-white border border-[#333333] px-1 py-0 hidden md:inline font-bold uppercase whitespace-nowrap">
+                    24-BIT WAV
+                  </span>
+                  <span className="text-[9px] text-[#888888] hidden lg:inline whitespace-nowrap">
+                    [{currentTrack.bpm ? `${currentTrack.bpm} BPM` : 'FREE TEMPO'} &bull; {currentTrack.key}]
+                  </span>
+                </div>
+              </div>
+
+              {/* Center: Audio Scrubber + 2/4/8 Bars Loop + Continuous Audition Toggle */}
+              <div className="hidden md:flex items-center gap-2 flex-1 max-w-lg mx-2">
+                <span className="text-[10px] text-[#888888] w-8 text-right font-mono">
+                  {formatSeconds(currentTime)}
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max={currentTrack.durationSec}
+                  step="0.1"
+                  value={currentTime}
+                  onChange={(e) => setCurrentTime(Number(e.target.value))}
+                  className="flex-1 h-1 bg-[#222222] rounded-none appearance-none cursor-pointer accent-white"
+                />
+                <span className="text-[10px] text-[#888888] w-8 font-mono">
+                  {currentTrack.duration}
+                </span>
+
+                {/* 2 / 4 / 8 Bar Loop Buttons in Floating Player */}
+                <div className="flex items-center gap-0.5">
+                  {([2, 4, 8] as LoopBarOption[]).map((bars) => (
+                    <button
+                      key={bars}
+                      type="button"
+                      onClick={() => handleToggleBarLoop(bars)}
+                      className={`text-[9px] px-1 py-0.5 border uppercase font-bold transition-colors ${
+                        loopBars === bars
+                          ? 'border-white bg-white text-black'
+                          : 'border-[#333333] text-[#888888] hover:text-white'
+                      }`}
+                      title={`Loop ${bars} bars`}
+                    >
+                      {bars}B
+                    </button>
+                  ))}
+                </div>
+
+                {/* Continuous Audition Auto-Advance Indicator / Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setAutoAdvance(!autoAdvance)}
+                  className={`text-[9px] px-1.5 py-0.5 border uppercase font-bold flex items-center gap-1 transition-colors whitespace-nowrap ${
+                    autoAdvance
+                      ? 'border-white bg-[#181818] text-white'
+                      : 'border-[#333333] text-[#666666] hover:text-white'
+                  }`}
+                  title="Continuous Audition: Automatically transition to next track upon finish"
+                >
+                  <Repeat className="w-2.5 h-2.5" />
+                  <span>AUTO: {autoAdvance ? 'ON' : 'OFF'}</span>
+                </button>
+
+                {/* Stem Solo Quick Switch */}
+                {currentTrack.hasStems && (
+                  <div className="hidden xl:flex items-center gap-1 border-l border-[#222222] pl-2">
+                    <span className="text-[9px] text-[#666666]">STEM:</span>
+                    {(['master', 'drums', 'bass', 'synths'] as StemSoloMode[]).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => handleStemSoloSwitch(mode)}
+                        className={`text-[9px] px-1 py-0.2 border uppercase ${
+                          activeStemSolo === mode
+                            ? 'border-white bg-white text-black font-bold'
+                            : 'border-[#222222] text-[#777777] hover:text-white'
+                        }`}
+                      >
+                        {mode[0].toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Direct Acquisition Buttons + Crate Button + Minimize */}
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsCrateOpen(true)}
+                  className={`border text-[10px] sm:text-[11px] uppercase px-2 py-1 font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
+                    favorites.length > 0 
+                      ? 'border-white bg-[#181818] text-white hover:bg-white hover:text-black shadow-[0_0_8px_rgba(255,255,255,0.2)]' 
+                      : 'border-[#333333] text-[#888888] hover:text-white'
+                  }`}
+                  title="Open your project crate"
+                >
+                  <ShoppingBag className="w-3 h-3" />
+                  <span>CRATE ({favorites.length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModalTrack(currentTrack);
+                    setModalTier('master');
+                  }}
+                  className="border border-white bg-white text-black font-bold text-[10px] sm:text-[11px] uppercase px-2.5 sm:px-3 py-1 hover:bg-black hover:text-white transition-all flex items-center gap-1 whitespace-nowrap phosphor-hover"
+                >
+                  <span>ACQUIRE $10</span>
+                  <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
+                </button>
+
+                {currentTrack.hasStems && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setModalTrack(currentTrack);
+                      setModalTier('stems');
+                    }}
+                    className="border border-[#555555] bg-[#141414] text-white hover:bg-white hover:text-black font-bold text-[10px] sm:text-[11px] uppercase px-2 sm:px-2.5 py-1 transition-all flex items-center gap-1 whitespace-nowrap"
+                  >
+                    <span>STEMS $25</span>
+                    <ArrowUpRight className="w-3 h-3 stroke-[2.5]" />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setIsDockDismissed(true)}
+                  className="text-[#888888] hover:text-white border border-[#333333] hover:border-white px-1.5 py-0.5 text-[10px] font-bold uppercase ml-0.5"
+                  title="Minimize floating player dock"
+                  aria-label="Minimize floating player dock"
+                >
+                  [ − ]
+                </button>
+              </div>
+            </div>
+          </aside>
+        )
+      )}
+
+      {/* ================================================================================== */}
+      {/* CHECKOUT MODAL ($10 PERPETUAL MASTER / $25 STEMS + $2K CEILING TERMS)             */}
+      {/* ================================================================================== */}
+      {modalTrack && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div className="border-2 border-white bg-black max-w-lg w-full p-5 md:p-6 shadow-[0_0_30px_rgba(255,255,255,0.2)] font-mono">
+            <div className="border-b-2 border-white pb-3 mb-3 flex justify-between items-start">
+              <div>
+                <span className="text-[10px] text-[#aaaaaa] uppercase tracking-wider block font-bold">
+                  DIRECT ACQUISITION // PERPETUAL INDIE LICENSE
+                </span>
+                <h3 className="text-lg font-bold uppercase tracking-wider text-white">
+                  {modalTrack.title}
+                </h3>
+              </div>
+              <span className="border border-white px-2 py-0.5 text-xs font-bold uppercase text-white">
+                {modalTrack.catalogId}
+              </span>
+            </div>
+
+            {/* Tier Selector */}
+            {modalTrack.hasStems && (
+              <div className="border border-[#333333] p-1.5 mb-3 bg-[#0a0a0a] flex gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setModalTier('master')}
+                  className={`flex-1 py-1.5 border uppercase transition-all ${
+                    modalTier === 'master'
+                      ? 'border-white bg-white text-black font-bold'
+                      : 'border-[#333333] text-[#888888] hover:text-white'
+                  }`}
+                >
+                  STEREO MASTER ($10)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalTier('stems')}
+                  className={`flex-1 py-1.5 border uppercase transition-all ${
+                    modalTier === 'stems'
+                      ? 'border-white bg-white text-black font-bold'
+                      : 'border-[#333333] text-white hover:border-white'
+                  }`}
+                >
+                  MULTI-TRACK STEMS ($25)
+                </button>
+              </div>
+            )}
+
+            {/* Stems Content Breakdown */}
+            {modalTier === 'stems' && modalTrack.stemsBreakdown && (
+              <div className="border border-[#444444] bg-[#0e0e0e] p-2.5 mb-3 text-[11px]">
+                <span className="text-white font-bold block mb-1">
+                  [✓ INCLUDES SEPARATED 24-BIT WAV STEMS + STEREO MASTER]:
+                </span>
+                <div className="flex flex-wrap gap-1 text-[10px] text-white">
+                  {modalTrack.stemsBreakdown.map((stem) => (
+                    <span key={stem} className="border border-[#333333] bg-black px-1.5 py-0.5">
+                      &bull; {stem}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1.5 mb-3 text-xs">
+              <div className="flex justify-between border-b border-[#222222] pb-1">
+                <span className="text-[#888888]">CATALOG ID:</span>
+                <span className="text-white">{modalTrack.catalogId}</span>
+              </div>
+              <div className="flex justify-between border-b border-[#222222] pb-1">
+                <span className="text-[#888888]">PACKAGE TIER:</span>
+                <span className="text-white font-bold">
+                  {modalTier === 'master' ? '24-BIT STEREO MASTER WAV ($10)' : 'SEPARATED MULTI-TRACK STEMS + MASTER ($25)'}
+                </span>
+              </div>
+              <div className="flex justify-between border-b border-[#222222] pb-1">
+                <span className="text-[#888888]">LICENSE DURATION:</span>
+                <span className="text-white font-bold">PERPETUAL (NEVER EXPIRES)</span>
+              </div>
+              <div className="flex justify-between border-b border-[#222222] pb-1">
+                <span className="text-[#888888]">COMMERCIAL CEILING:</span>
+                <span className="text-white">UP TO $2,000 GROSS / 100,000 STREAMS</span>
+              </div>
+              <div className="flex justify-between border-b border-[#222222] pb-1">
+                <span className="text-[#888888]">TOTAL DUE:</span>
+                <span className="text-white font-bold text-base">
+                  ${(modalTier === 'master' ? modalTrack.priceUsd : modalTrack.stemPriceUsd).toFixed(2)} USD
+                </span>
+              </div>
+            </div>
+
+            {/* Plain-English License Terms Toggle */}
+            <div className="border border-[#333333] mb-3 bg-[#0a0a0a]">
+              <button
+                type="button"
+                onClick={() => setShowLicenseScope(!showLicenseScope)}
+                className="w-full text-left p-2 text-[11px] text-white flex justify-between items-center hover:bg-[#111111]"
+              >
+                <span className="flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-white" />
+                  <span>[+] VIEW PERPETUAL LICENSE &amp; REVENUE CEILING TERMS</span>
+                </span>
+                {showLicenseScope ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+
+              {showLicenseScope && (
+                <div className="p-3 border-t border-[#222222] text-[10px] text-[#aaaaaa] space-y-1.5 leading-relaxed">
+                  <div>&bull; <strong className="text-white">PERPETUAL CLEARANCE:</strong> Non-exclusive synchronization and distribution rights that never expire worldwide for video games, YouTube, podcasts, and indie films.</div>
+                  <div>&bull; <strong className="text-white">COMMERCIAL CEILING ($2,000 / 100K STREAMS):</strong> Covers production earnings up to $2,000 USD gross or 100,000 streams. If gross revenue exceeds $2,000, licensee agrees to contact Give It All Records for a standard commercial upgrade / split agreement.</div>
+                  <div>&bull; <strong className="text-white">VOCAL LEASE:</strong> Emcees and vocalists are cleared to record original vocal tracks and distribute them commercially.</div>
+                  <div>&bull; <strong className="text-white">CUE SHEETS:</strong> For broadcast TV, cable, and theatrical movies, credit Luciano Lupini (100% Composer / 100% Publisher).</div>
+                </div>
+              )}
+            </div>
+
+            {/* Payment Options */}
+            <div className="border border-white p-2.5 mb-3 bg-[#0a0a0a]">
+              <span className="text-[10px] text-[#888888] block uppercase tracking-wider mb-1.5">
+                SELECT PAYMENT METHOD:
+              </span>
+              <div className="space-y-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setActivePaymentRail('crypto')}
+                  className={`w-full text-left p-1.5 border uppercase flex items-center justify-between transition-all ${
+                    activePaymentRail === 'crypto'
+                      ? 'border-white bg-white text-black font-bold'
+                      : 'border-[#333333] text-[#aaaaaa] hover:border-white hover:text-white'
+                  }`}
+                >
+                  <span>[1] CRYPTO (USDT / BTC / ETH DIRECT)</span>
+                  {activePaymentRail === 'crypto' && <Check className="w-3.5 h-3.5 text-black" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActivePaymentRail('direct')}
+                  className={`w-full text-left p-1.5 border uppercase flex items-center justify-between transition-all ${
+                    activePaymentRail === 'direct'
+                      ? 'border-white bg-white text-black font-bold'
+                      : 'border-[#333333] text-[#aaaaaa] hover:border-white hover:text-white'
+                  }`}
+                >
+                  <span>[2] ONLINE CHECKOUT GATEWAY</span>
+                  {activePaymentRail === 'direct' && <Check className="w-3.5 h-3.5 text-black" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActivePaymentRail('email')}
+                  className={`w-full text-left p-1.5 border uppercase flex items-center justify-between transition-all ${
+                    activePaymentRail === 'email'
+                      ? 'border-white bg-white text-black font-bold'
+                      : 'border-[#333333] text-[#aaaaaa] hover:border-white hover:text-white'
+                  }`}
+                >
+                  <span>[3] DIRECT EMAIL ORDER (MANUAL INVOICE)</span>
+                  {activePaymentRail === 'email' && <Check className="w-3.5 h-3.5 text-black" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2">
+              {activePaymentRail === 'crypto' ? (
+                <a
+                  href={`https://giveitallrecords.com/shop/?add-to-cart=${modalTrack.wooCommerceId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full text-center py-2.5 bg-white text-black font-bold uppercase text-xs tracking-wider border-2 border-white hover:bg-black hover:text-white transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>PROCEED TO DIRECT CHECKOUT</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              ) : activePaymentRail === 'direct' ? (
+                <a
+                  href={`https://giveitallrecords.com/shop/?add-to-cart=${modalTrack.wooCommerceId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full text-center py-2.5 bg-white text-black font-bold uppercase text-xs tracking-wider border-2 border-white hover:bg-black hover:text-white transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>PROCEED TO PAYMENT TERMINAL</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              ) : (
+                <a
+                  href={`mailto:contact@giveitallrecords.com?subject=ORDER%20//%20${encodeURIComponent(
+                    modalTrack.title
+                  )}%20//%20${modalTier.toUpperCase()}&body=TRACK:%20${encodeURIComponent(
+                    modalTrack.title
+                  )}%0ACATALOG:%20${
+                    modalTrack.catalogId
+                  }%0ATIER:%20${modalTier.toUpperCase()}%0APRICE:%20$${
+                    modalTier === 'master' ? modalTrack.priceUsd : modalTrack.stemPriceUsd
+                  }%0ALICENSE:%20PERPETUAL%20NON-EXCLUSIVE%20(UP%20TO%20$2,000%20REVENUE)`}
+                  className="w-full text-center py-2.5 bg-white text-black font-bold uppercase text-xs tracking-wider border-2 border-white hover:bg-black hover:text-white transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>LAUNCH PRE-FILLED EMAIL ORDER</span>
+                  <Mail className="w-3.5 h-3.5" />
+                </a>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setModalTrack(null)}
+                className="w-full py-2 bg-transparent text-white border border-[#444444] text-xs uppercase hover:border-white transition-colors"
+              >
+                CLOSE / RETURN TO CATALOG
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================================== */}
+      {/* 1-CLICK SAMPLE CLEARANCE CERTIFICATE MODAL                                         */}
+      {/* ================================================================================== */}
+      {certificateTrack && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 overflow-y-auto print-only-modal"
+        >
+          <div className="border-2 border-white bg-[#080808] max-w-2xl w-full p-6 md:p-8 font-mono print-certificate-card shadow-[0_0_35px_rgba(255,255,255,0.18)]">
+            <div className="border-b-2 border-white pb-3 mb-4 flex justify-between items-start">
+              <div>
+                <div className="flex items-center gap-2 text-white text-xs font-bold uppercase tracking-wider mb-1">
+                  <ShieldCheck className="w-4 h-4 fill-current" />
+                  <span>OFFICIAL MASTER USE &amp; SYNCHRONIZATION CERTIFICATE</span>
+                </div>
+                <h3 className="text-xl font-bold uppercase text-white tracking-widest">
+                  GIVE IT ALL RECORDS // CARACAS SOUND LAB
+                </h3>
+                <span className="text-[10px] text-[#888888]">
+                  CERTIFICATE ID: GIAR-SYNC-{certificateTrack.catalogId}-2026
+                </span>
+              </div>
+              <div className="border border-white bg-black text-white px-2 py-1 text-right text-[10px] font-bold">
+                100% DIRECT<br/>RIGHTS
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs text-[#cccccc] mb-6 leading-relaxed">
+              <div className="border border-[#333333] bg-black p-3 space-y-1">
+                <div className="flex justify-between"><span className="text-[#888888]">TRACK TITLE:</span> <strong className="text-white uppercase">{certificateTrack.title}</strong></div>
+                <div className="flex justify-between"><span className="text-[#888888]">CATALOG ID:</span> <span className="text-white">{certificateTrack.catalogId}</span></div>
+                <div className="flex justify-between"><span className="text-[#888888]">COMPOSER &amp; PRODUCER:</span> <span className="text-white">Luciano Lupini (Caracas, Venezuela)</span></div>
+                <div className="flex justify-between"><span className="text-[#888888]">AUDIO SPECIFICATION:</span> <span className="text-white">24-Bit / 48kHz Direct PCM WAV</span></div>
+                <div className="flex justify-between"><span className="text-[#888888]">TEMPO &amp; KEY:</span> <span className="text-white">{certificateTrack.bpm ? `${certificateTrack.bpm} BPM // ${certificateTrack.key}` : 'Free Tempo / Unquantized Master'}</span></div>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1">
+                  I. GRANT OF PERPETUAL SYNCHRONIZATION RIGHTS
+                </h4>
+                <p className="text-[11px] text-[#aaaaaa]">
+                  Give It All Records grants the purchaser a perpetual, worldwide, non-exclusive synchronization license to incorporate and reproduce the sound recording into visual and multimedia productions, including indie films, video games, YouTube/Twitch broadcasts, podcasts, and trailers.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1">
+                  II. COMMERCIAL CEILING &amp; REVENUE SHARING
+                </h4>
+                <p className="text-[11px] text-[#aaaaaa]">
+                  The license covers commercial projects generating up to $2,000 USD gross revenue or 100,000 streams. If a production exceeds $2,000 USD in gross receipts, licensee is required to contact Give It All Records (contact@giveitallrecords.com) for a standard master buyout extension.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1">
+                  III. 100% DIRECT RIGHTS &amp; WARRANTY
+                </h4>
+                <p className="text-[11px] text-[#aaaaaa]">
+                  Licensor warrants that Luciano Lupini is the sole composer, performer, mixer, and master rights owner. The sound recording contains zero uncleared third-party samples. The licensee is fully indemnified and held harmless against third-party copyright claims.
+                </p>
+              </div>
+
+              <div className="border-t border-[#333333] pt-2 text-[10px] text-[#777777] flex justify-between items-center">
+                <span>SEAL: CARACAS MASTER ARCHIVE</span>
+                <span className="text-white font-bold">LUCIANO LUPINI &bull; COMPOSER &amp; MASTER OWNER</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#333333] pt-4 no-print">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="border-2 border-white bg-white text-black font-bold text-xs uppercase px-3 py-1.5 hover:bg-black hover:text-white transition-all flex items-center gap-1.5"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>PRINT / EXPORT PDF</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleCopyCertificate(certificateTrack)}
+                  className="border border-[#444444] text-[#cccccc] hover:text-white hover:border-white text-xs uppercase px-3 py-1.5 transition-all flex items-center gap-1.5 bg-[#0a0a0a]"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{certificateCopied ? '✓ CERTIFICATE COPIED' : 'COPY CERTIFICATE TEXT'}</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCertificateTrack(null)}
+                className="border border-[#555555] text-white hover:border-white text-xs uppercase px-3 py-1.5"
+              >
+                ✕ CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================================== */}
+      {/* 6. DEDICATED PROJECT CRATE MODAL / DRAWER                                          */}
+      {/* ================================================================================== */}
+      {isCrateOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+        >
+          <div className="border-2 border-white bg-black max-w-2xl w-full p-4 sm:p-6 shadow-[0_0_40px_rgba(255,255,255,0.2)] font-mono">
+            {/* Modal Header */}
+            <div className="border-b-2 border-white pb-3 mb-4 flex justify-between items-start gap-2">
+              <div>
+                <div className="flex items-center gap-2 text-white text-xs font-bold uppercase tracking-wider mb-0.5">
+                  <ShoppingBag className="w-4 h-4 fill-current" />
+                  <span>PROJECT CRATE // BUNDLE ACQUISITION</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold uppercase text-white tracking-wider">
+                  {favorites.length} {favorites.length === 1 ? 'TRACK SELECTED' : 'TRACKS SELECTED'}
+                </h3>
+                <span className="text-[10px] text-[#888888]">
+                  PERPETUAL NON-EXCLUSIVE INDIE LICENSE &bull; 100% DIRECT RIGHTS
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCrateOpen(false)}
+                className="border border-[#444444] text-[#aaaaaa] hover:border-white hover:text-white p-1 text-xs"
+                title="Close Crate"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Bundle Discount Tier Ladder */}
+            <div className="border border-[#333333] bg-[#0a0a0a] p-2.5 mb-4 text-xs">
+              <div className="text-[10px] text-white font-bold uppercase mb-1.5 flex justify-between items-center">
+                <span>BUNDLE SAVINGS LADDER:</span>
+                <span>
+                  {favorites.length === 0 && 'ADD TRACKS TO UNLOCK DISCOUNTS'}
+                  {favorites.length === 1 && 'ADD 2 MORE TRACKS FOR $25 BUNDLE (SAVE $5)'}
+                  {favorites.length === 2 && 'ADD 1 MORE TRACK FOR $25 BUNDLE (SAVE $5)'}
+                  {favorites.length === 3 && '✓ 3-MASTER BUNDLE ACTIVE (SAVED $5.00)'}
+                  {favorites.length === 4 && 'ADD 1 MORE TRACK FOR $40 EP PACK (SAVE $10)'}
+                  {favorites.length >= 5 && favorites.length < 8 && `✓ 5-MASTER EP PACK ACTIVE (SAVED $${shortlistPricing.savings}.00)`}
+                  {favorites.length >= 8 && `✓ FULL SOUNDTRACK PACK ACTIVE (SAVED $${shortlistPricing.savings}.00)`}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px]">
+                <div className={`p-1.5 border text-center ${
+                  favorites.length >= 1 && favorites.length <= 2 
+                    ? 'border-white bg-[#181818] text-white font-bold' 
+                    : 'border-[#222222] bg-black text-[#666666]'
+                }`}>
+                  <span className="block">1-2 TRACKS</span>
+                  <span className="text-white font-bold">$10 / EACH</span>
+                </div>
+                <div className={`p-1.5 border text-center ${
+                  favorites.length >= 3 && favorites.length <= 4 
+                    ? 'border-white bg-white text-black font-bold shadow-[0_0_8px_rgba(255,255,255,0.25)]' 
+                    : 'border-[#222222] bg-black text-[#666666]'
+                }`}>
+                  <span className="block">3 TRACKS</span>
+                  <span className="font-bold">$25 (SAVE $5)</span>
+                </div>
+                <div className={`p-1.5 border text-center ${
+                  favorites.length >= 5 && favorites.length < 8 
+                    ? 'border-white bg-white text-black font-bold shadow-[0_0_8px_rgba(255,255,255,0.25)]' 
+                    : 'border-[#222222] bg-black text-[#666666]'
+                }`}>
+                  <span className="block">5-TRACK EP</span>
+                  <span className="font-bold">$40 (SAVE $10)</span>
+                </div>
+                <div className={`p-1.5 border text-center ${
+                  favorites.length >= 8 
+                    ? 'border-white bg-white text-black font-bold shadow-[0_0_8px_rgba(255,255,255,0.25)]' 
+                    : 'border-[#222222] bg-black text-[#666666]'
+                }`}>
+                  <span className="block">8+ OST PACK</span>
+                  <span className="font-bold">$60 (SAVE $20+)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Crate Items List */}
+            {favorites.length === 0 ? (
+              <div className="border border-[#222222] p-6 text-center bg-[#070707] mb-4">
+                <ShoppingBag className="w-8 h-8 text-[#555555] mx-auto mb-2" />
+                <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
+                  YOUR CRATE IS CURRENTLY EMPTY
+                </h4>
+                <p className="text-xs text-[#888888] mb-3 max-w-md mx-auto">
+                  Browse the master releases in the store and click <strong className="text-white">[+ ADD TO CRATE]</strong> on any track to build your custom project package.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsCrateOpen(false)}
+                  className="border border-white bg-white text-black font-bold text-xs uppercase px-4 py-1.5 hover:bg-[#dddddd] transition-colors"
+                >
+                  BROWSE RELEASES
+                </button>
+              </div>
+            ) : (
+              <div className="border border-[#222222] bg-[#070707] mb-4 divide-y divide-[#1a1a1a] max-h-72 overflow-y-auto">
+                {CATALOG.filter((t) => favorites.includes(t.id)).map((track) => {
+                  const isThisPlaying = currentTrack?.id === track.id && isPlaying;
+                  return (
+                    <div
+                      key={track.id}
+                      className="p-2 sm:px-3 sm:py-2.5 flex items-center justify-between gap-2.5 hover:bg-[#0c0c0c] transition-colors"
+                    >
+                      {/* Left: Play audition button + track identity */}
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <button
+                          type="button"
+                          onClick={() => handlePlayTrack(track)}
+                          className={`w-7 h-7 border text-xs flex items-center justify-center flex-shrink-0 transition-colors ${
+                            isThisPlaying
+                              ? 'border-white bg-white text-black'
+                              : 'border-white text-white hover:bg-white hover:text-black'
+                          }`}
+                          title={isThisPlaying ? "Pause" : "Play preview"}
+                        >
+                          {isThisPlaying ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
+                        </button>
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-[#666666] font-bold">{track.catalogId}</span>
+                            <span className="text-xs font-bold text-white uppercase truncate">{track.title}</span>
+                          </div>
+                          <div className="text-[10px] text-[#888888] flex items-center gap-1.5 mt-0.5">
+                            <span className="text-white">[{track.moodPrimary}]</span>
+                            <span>&bull;</span>
+                            <span>{track.genre}</span>
+                            <span>&bull;</span>
+                            <span>{track.duration}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Price & Remove button */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-white font-mono font-bold">$10.00</span>
+                        <button
+                          type="button"
+                          onClick={() => toggleFavorite(track.id)}
+                          className="border border-[#333333] hover:border-white hover:text-white p-1 text-[10px] text-[#777777] transition-colors"
+                          title="Remove track from crate"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Financial Totals Card */}
+            {favorites.length > 0 && (
+              <div className="border border-white p-3 bg-[#0a0a0a] mb-4 space-y-1.5 text-xs">
+                <div className="flex justify-between border-b border-[#222222] pb-1">
+                  <span className="text-[#888888]">CRATE ITEMS:</span>
+                  <span className="text-white font-bold">{favorites.length} Uncompressed WAV Masters</span>
+                </div>
+                <div className="flex justify-between border-b border-[#222222] pb-1">
+                  <span className="text-[#888888]">CATALOG BASE PRICE:</span>
+                  <span className="text-[#aaaaaa] line-through">${favorites.length * 10}.00 USD</span>
+                </div>
+                {shortlistPricing.savings > 0 && (
+                  <div className="flex justify-between border-b border-[#222222] pb-1 text-white">
+                    <span className="font-bold">BUNDLE DISCOUNT APPLIED:</span>
+                    <span className="font-bold">-${shortlistPricing.savings}.00 USD ({shortlistPricing.label})</span>
+                  </div>
+                )}
+                <div className="flex justify-between pt-0.5 text-sm">
+                  <span className="font-bold text-white uppercase">TOTAL DUE (PERPETUAL SYNC):</span>
+                  <span className="font-bold text-white text-base font-mono">
+                    ${shortlistPricing.total}.00 USD
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* License Terms Summary */}
+            <div className="border border-[#222222] bg-[#050505] p-2.5 mb-4 text-[10px] text-[#888888] space-y-1">
+              <div>&bull; <strong className="text-white">PERPETUAL INDIE LICENSE:</strong> Non-exclusive synchronization for games, indie films, trailers, YouTube, and podcasts worldwide.</div>
+              <div>&bull; <strong className="text-white">COMMERCIAL CEILING:</strong> Covers projects up to $2,000 USD gross revenue or 100,000 streams. Over $2,000 revenue requires contacting Give It All Records for a standard master extension split.</div>
+              <div>&bull; <strong className="text-white">DIRECT DISPATCH:</strong> 24-bit / 48kHz WAV audio files delivered direct to your email upon checkout.</div>
+            </div>
+
+            {/* Modal Actions */}
+            {favorites.length > 0 ? (
+              <div className="space-y-2">
+                <a
+                  href={`mailto:contact@giveitallrecords.com?subject=PROJECT%20CRATE%20ORDER%20//%20${favorites.length}%20MASTERS&body=I%20would%20like%20to%20acquire%20the%20following%20project%20bundle%20(${favorites.length}%20masters%20for%20$${shortlistPricing.total}.00%20USD):%0A%0A${encodeURIComponent(
+                    CATALOG.filter((t) => favorites.includes(t.id))
+                      .map((t) => `${t.catalogId} - ${t.title} [${t.genre}]`)
+                      .join('%0A')
+                  )}%0A%0ATOTAL:%20$${shortlistPricing.total}.00%20USD%0ALICENSE:%20PERPETUAL%20NON-EXCLUSIVE%20(UP%20TO%20$2,000%20GROSS%20REVENUE)`}
+                  className="w-full text-center py-2.5 bg-white text-black font-bold uppercase text-xs tracking-wider border-2 border-white hover:bg-black hover:text-white transition-all flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>ACQUIRE ENTIRE CRATE BUNDLE &bull; ${shortlistPricing.total}.00 USD</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                </a>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCrateOnly(true);
+                      setIsCrateOpen(false);
+                    }}
+                    className="py-1.5 border border-white text-white hover:bg-white hover:text-black uppercase transition-colors"
+                  >
+                    FILTER CATALOG TO CRATE
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFavorites([])}
+                    className="py-1.5 border border-[#333333] text-[#777777] hover:text-white hover:border-white uppercase transition-colors"
+                  >
+                    EMPTY CRATE
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="mt-3 text-center">
+              <button
+                type="button"
+                onClick={() => setIsCrateOpen(false)}
+                className="text-[11px] text-[#666666] hover:text-white uppercase"
+              >
+                [CLOSE CRATE WINDOW]
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================================== */}
+      {/* 7. FLOATING CRATE HUD NOTIFICATION TOAST                                           */}
+      {/* ================================================================================== */}
+      {crateToast && (
+        <aside 
+          aria-label="Crate notification"
+          className="fixed bottom-14 sm:bottom-16 right-3 sm:right-6 z-50 border-2 border-white bg-black text-white p-3 font-mono shadow-[0_0_20px_rgba(255,255,255,0.3)] max-w-sm flex items-center justify-between gap-3 animate-bounce"
+        >
+          <div className="text-xs">
+            <span className="text-white font-bold block uppercase flex items-center gap-1">
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span>PROJECT CRATE:</span>
+            </span>
+            <p className="text-[11px] text-[#cccccc] mt-0.5">{crateToast}</p>
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setCrateToast(null);
+                setIsCrateOpen(true);
+              }}
+              className="border border-white bg-white text-black text-[10px] font-bold uppercase px-2 py-1 hover:bg-black hover:text-white transition-colors"
+            >
+              VIEW CRATE ↗
+            </button>
+            <button
+              type="button"
+              onClick={() => setCrateToast(null)}
+              className="text-[#666666] hover:text-white p-0.5"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </aside>
+      )}
+    </div>
+  );
+}

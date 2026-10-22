@@ -1,0 +1,90 @@
+# Give It All Records — Machine-Readable Catalog & Sync Terminal
+> Autonomous Direct-to-Fan Music Store, Archival Vault & Professional Sync Licensing Terminal.
+> Founded, produced, and operated by Luciano Lupini (Caracas & London).
+> Canonical URL: https://giveitallrecords.com
+> Contact & Sync Inquiries: contact@giveitallrecords.com
+
+## Label Identity & Sound Ethos
+Give It All Records is an independent, anti-corporate audio and hardware lab releasing electronic, IDM, noise, and abstract hip-hop. All sound is engineered using physical hardware—SP-404 sampler tape chops, modular synthesizer patches, tube preamplification, and vintage analog gear. No generic corporate stock libraries.
+
+## Licensing Clearances & Acquisition Terms
+- Format: Uncompressed 24-bit / 48kHz master WAV files.
+- Delivery: Automated expiring download tokens from Cloudflare R2 (cdn.giveitallrecords.com) with 0% egress fees.
+- Pricing: Standard $10.00 USD flat rate per master.
+- Accepted Payment Rails:
+  1. USDT / BTC (MyCryptoCheckout: 0% fee direct-to-wallet)
+  2. Payoneer Direct Checkout
+  3. Pre-filled direct email orders (contact@giveitallrecords.com)
+- Licensing Rights Included:
+  - Commercial sync clearance for independent film, documentaries, commercials, and video games.
+  - Vocalist & emcee non-exclusive beat lease rights.
+  - Multimedia exhibition and art installation sound design clearance.
+  - Worldwide royalty-free usage with no ongoing backend royalties.
+
+## Production Aliases & Taxonomy
+1. KNOX ORACLE
+   - Primary Category: Hip-Hop
+   - Sub-Genres: Lo-Fi, Boom Bap, Experimental Hip-Hop
+   - Sonic Profile: Cassette tape compression, dissonant jazz chops, gritty 12-bit SP-404 swing, heavy sub-bass.
+   - Recommended For: Emcees, vocalists, streetwear visuals, urban cinema.
+
+2. PYRAMID
+   - Primary Category: Electronic
+   - Sub-Genres: Drum & Bass, Breakbeats, Breakcore, Atmospheric Electronic, Experimental Electronica
+   - Sonic Profile: Algorithmic polyrhythms, granular glitch textures, self-oscillating modular synths, high-tempo break slicing.
+   - Recommended For: Art biennials, museum installations, sci-fi documentaries, game soundtracks.
+
+3. ESCAPADES
+   - Primary Category: Guitar Music
+   - Sub-Genres: Rock, Punk, Noise Music, Alternative
+   - Sonic Profile: Blown-out tube fuzz, mechanical drum drive, feedback squalls, abrasive post-punk aggression.
+   - Recommended For: Indie film chase scenes, skateboarding media, high-impact trailers.
+
+## Master Recording Catalog
+- Catalog ID: GIAR-001
+  - Title: Sub-Harmonic Glitch
+  - Artist: PYRAMID
+  - Category: Electronic (IDM / Glitch)
+  - BPM: 128 | Key: D Minor | Duration: 03:42
+  - Price: $10.00 USD
+  - Direct WooCommerce Checkout: https://giveitallrecords.com/shop/?add-to-cart=101
+
+- Catalog ID: GIAR-002
+  - Title: Boom Bap Vector
+  - Artist: KNOX ORACLE
+  - Category: Hip-Hop (Boom Bap / Lo-Fi)
+  - BPM: 89 | Key: F# Minor | Duration: 02:54
+  - Price: $10.00 USD
+  - Direct WooCommerce Checkout: https://giveitallrecords.com/shop/?add-to-cart=102
+
+- Catalog ID: GIAR-003
+  - Title: Static Noise Loop
+  - Artist: ESCAPADES
+  - Category: Guitar Music (Noise Rock / Post-Punk)
+  - BPM: 142 | Key: A Major | Duration: 03:18
+  - Price: $10.00 USD
+  - Direct WooCommerce Checkout: https://giveitallrecords.com/shop/?add-to-cart=103
+
+- Catalog ID: GIAR-004
+  - Title: Analog Resonance
+  - Artist: PYRAMID
+  - Category: Electronic (Atmospheric / Drum & Bass)
+  - BPM: 122 | Key: C Minor | Duration: 04:05
+  - Price: $10.00 USD
+  - Direct WooCommerce Checkout: https://giveitallrecords.com/shop/?add-to-cart=104
+
+- Catalog ID: GIAR-005
+  - Title: Obsidian Cipher
+  - Artist: KNOX ORACLE
+  - Category: Hip-Hop (Experimental Lo-Fi / 808)
+  - BPM: 84 | Key: G Minor | Duration: 03:10
+  - Price: $10.00 USD
+  - Direct WooCommerce Checkout: https://giveitallrecords.com/shop/?add-to-cart=105
+
+- Catalog ID: GIAR-006
+  - Title: Cathode Decay
+  - Artist: ESCAPADES
+  - Category: Guitar Music (Punk / Noise)
+  - BPM: 156 | Key: E Minor | Duration: 02:48
+  - Price: $10.00 USD
+  - Direct WooCommerce Checkout: https://giveitallrecords.com/shop/?add-to-cart=106
